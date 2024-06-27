@@ -8,18 +8,28 @@ import {
 
 function List2({ todo, onBack }) {
   const [isEditing, setIsEditing] = useState(false);
-  const [newTitle, setNewTitle] = useState(todo.event);
-  const [newDate, setNewDate] = useState(todo.date);
+  const [newTitle, setNewTitle] = useState(todo.title);
+  const [newDate, setNewDate] = useState(todo.dueDate);
+  const [calenDate, setCalenDate] = useState(new Date()); // calenDate의 초기 값 설정
   const [isRecurring, setIsRecurring] = useState(false);
-  const [recurringDate, setRecurringDate] = useState(todo.date);
+  const [recurringDate, setRecurringDate] = useState(todo.dueDate);
   const [recurringPeriod, setRecurringPeriod] = useState("");
   const [memo, setMemo] = useState("");
   const [isFavorite, setIsFavorite] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [dateDifference, setDateDifference] = useState("");
 
+  // 초기에 todo의 날짜를 설정
   useEffect(() => {
-    setNewDate(todo.date);
+    setNewDate(todo.dueDate);
+    setCalenDate(new Date(todo.dueDate));
+    setRecurringDate(todo.dueDate);
   }, [todo]);
+
+  // 컴포넌트가 처음 마운트될 때 달력에 초기 값이 표시되도록 설정
+  useEffect(() => {
+    setCalenDate(new Date(newDate)); // newDate 대신 초기 값을 설정할 때 사용하는 상태값을 넣어줌
+  }, []);
 
   const handleDelete = () => {
     alert("삭제되었습니다.");
@@ -36,7 +46,7 @@ function List2({ todo, onBack }) {
 
   const handleTitleKeyPress = (e) => {
     if (e.key === "Enter") {
-      todo.event = newTitle;
+      todo.title = newTitle;
       setIsEditing(false);
     }
   };
@@ -64,9 +74,21 @@ function List2({ todo, onBack }) {
     return nextDate.toISOString().split("T")[0];
   };
 
+  // 달력 선택 시 실행되는 함수
+  const handleCalendarChange = (e) => {
+    const selectedDate = new Date(e.target.value);
+    setCalenDate(selectedDate);
+
+    // newDate와 선택된 날짜 사이의 차이 계산
+    const differenceInDays = Math.ceil(
+      (new Date(selectedDate) - new Date(newDate)) / (1000 * 60 * 60 * 24)
+    );
+    setDateDifference(differenceInDays);
+  };
+
   return (
     <div className="relative p-5 pt-5 bg-dark text-black rounded-lg">
-      <div className="flex justify-between items-center mb-7 text-align; center">
+      <div className="flex justify-between items-center mb-7">
         <button
           onClick={() => setIsFavorite(!isFavorite)}
           className="bg-transparent border-none text-2xl cursor-pointer"
@@ -108,13 +130,13 @@ function List2({ todo, onBack }) {
       </div>
       <div className="flex justify-between mb-5">
         <span>
-          D-
-          {Math.ceil((new Date(newDate) - new Date()) / (1000 * 60 * 60 * 24))}
+          {dateDifference === 0 ? "D-day" : ""}D
+          {dateDifference >= 0 ? `+${dateDifference}` : `${dateDifference}`}
         </span>
         <input
           type="date"
-          value={newDate}
-          onChange={handleDateChange}
+          value={calenDate.toISOString().split("T")[0]} // 달력의 초기 값 설정
+          onChange={handleCalendarChange} // 달력 값 변경 시 실행되는 함수
           className="border border-gray-300 rounded"
         />
       </div>

@@ -97,13 +97,14 @@ function App() {
   };
 
   const handleSelectTodo = (todo) => {
+    console.log(todo);
     setSelectedTodo(todo);
     setCurrentView("list2");
   };
 
   const handleBackToList1 = () => {
     setSelectedTodo(null);
-    setCurrentView("list1");
+    setCurrentView("iconList");
   };
 
   const handleBackToCalendar = () => {
@@ -160,7 +161,11 @@ function App() {
           </div>
         )}
         {currentView === "iconList" && (
-          <IconList todos={todos} onSelectTodo={handleSelectTodo} />
+          <IconList
+            todos={list1Value}
+            onSelectTodo={handleSelectTodo}
+            list1Name={list1Name}
+          />
         )}
       </div>
       {(currentView === "list1" ||
