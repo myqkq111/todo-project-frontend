@@ -7,7 +7,9 @@ function Calen({ handleDateClick }) {
         // onChange={setValue}
         // value={value}
         className="dark-mode w-full border-none"
-        onClickDay={handleDateClick}
+        onClickDay={(event) => {
+          handleDateClick(event);
+        }}
       />
     </div>
   );
