@@ -7,12 +7,18 @@ function Header({
   handleSearchCategoryChange,
   isLoggedIn,
   handleLogout,
+  handleTodolistClick,
 }) {
   return (
     <header className="App-header bg-dark text-dark w-full py-4 fixed top-0 left-0 z-50 shadow-md">
       <div className="max-w-screen-lg mx-auto flex justify-between items-center px-4">
         <div className="flex items-center gap-4">
-          <h1 className="text-2xl font-bold tracking-wide">TodoList</h1>
+          <h1
+            className="text-2xl font-bold tracking-wide"
+            onClick={handleTodolistClick}
+          >
+            TodoList
+          </h1>
           <select
             value={dropdownValue}
             onChange={handleDropdownChange}

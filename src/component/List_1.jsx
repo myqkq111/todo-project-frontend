@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AiOutlinePlus } from "react-icons/ai";
+import { AiOutlinePlus, AiOutlineSync, AiFillStar } from "react-icons/ai"; // 주기적인 일과 중요한 일 아이콘 추가
 import axios from "axios";
 
 function List1({ date, onSelectTodo, todos, setTodos }) {
@@ -16,25 +16,30 @@ function List1({ date, onSelectTodo, todos, setTodos }) {
   const selectedDateString = adjustDate(date);
 
   const addTodo = () => {
-    if (newTodo.trim() !== "") {
-      const newTodoItem = {
-        title: newTodo,
-        contents: "", // 필요에 따라 추가 필드를 더 넣습니다.
-        categori: "일상", // 예시: categori는 애플리케이션 로직에 따라 동적으로 할당하거나 하드코딩할 수 있습니다.
-        dueDate: selectedDateString,
-        userId: "667b7be3e4220d59f2d58835", // 예시: 실제 인증에서 얻은 사용자 ID로 교체합니다.
-      };
-      axios
-        .post("http://localhost:3001/api/todos/new", newTodoItem)
-        .then((res) => {
-          setTodos([...todos, res.data]);
-          setNewTodo("");
-          setShowInput(false);
-        })
-        .catch((error) => {
-          console.error("할일 생성 오류:", error);
-        });
-    }
+    // if (newTodo.trim() !== "") {
+    //   const newTodoItem = {
+    //     id: todos.length + 1,
+    //     event: newTodo,
+    //     date: selectedDateString,
+    //     status: "미완료", // 기본 상태를 미완료로 설정
+    //     recurring: false, // 기본 값으로 설정
+    //     important: false, // 기본 값으로 설정
+    //     title: newTodo,
+    //     contents: "", // 필요에 따라 추가 필드를 더 넣습니다.
+    //     categori: "일상", // 예시: categori는 애플리케이션 로직에 따라 동적으로 할당하거나 하드코딩할 수 있습니다.
+    //     dueDate: selectedDateString,
+    //     userId: "667b7be3e4220d59f2d58835", // 예시: 실제 인증에서 얻은 사용자 ID로 교체합니다.
+    //   };
+    axios
+      .post("http://localhost:3001/api/todos/new", newTodoItem)
+      .then((res) => {
+        setTodos([...todos, res.data]);
+        setNewTodo("");
+        setShowInput(false);
+      })
+      .catch((error) => {
+        console.error("할일 생성 오류:", error);
+      });
   };
 
   const handleKeyPress = (e) => {
@@ -64,7 +69,7 @@ function List1({ date, onSelectTodo, todos, setTodos }) {
             onChange={(e) => setNewTodo(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="새 할일 입력"
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-md text-black"
           />
         </div>
       )}
@@ -74,11 +79,28 @@ function List1({ date, onSelectTodo, todos, setTodos }) {
           .map((todo, index) => (
             <li
               key={index}
-              className="flex justify-center w-full mb-2 p-2 border-b border-gray-300 cursor-pointer"
+              className={`flex justify-between w-full mb-2 p-2 border-b border-gray-300 cursor-pointer ${
+                todo.status === "미완료" ? "text-black" : "text-gray-500"
+              } font-bold`}
               onClick={() => onSelectTodo(todo)}
-              style={{ color: "black", fontWeight: "bold" }}
             >
               <span>{todo.title}</span>
+              <div className="flex items-center ml-2">
+                {todo.recurring &&
+                  (todo.status === "미완료" ? (
+                    <AiOutlineSync className="text-yellow-500 ml-1" />
+                  ) : (
+                    <AiOutlineSync className="text-gray-300 ml-1" />
+                  ))}{" "}
+                {/* 주기적인 일 아이콘 */}
+                {todo.important &&
+                  (todo.status === "미완료" ? (
+                    <AiFillStar className="text-red-500 ml-1" />
+                  ) : (
+                    <AiFillStar className="text-gray-300 ml-1" />
+                  ))}{" "}
+                {/* 중요한 일 아이콘 */}
+              </div>
             </li>
           ))}
       </ul>
