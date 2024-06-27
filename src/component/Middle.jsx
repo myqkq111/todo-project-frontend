@@ -5,22 +5,28 @@ function Middle({ handleIconClick }) {
   return (
     <>
       <div className="icons flex justify-around px-4 mt-8">
-        <button className="icon-button icon-current" onClick={handleIconClick}>
+        <button
+          className="icon-button icon-current flex items-center justify-center p-2 rounded-full transition-transform transform hover:scale-110"
+          onClick={handleIconClick}
+        >
           <AiOutlineClose className="text-3xl" title="미완료" />
         </button>
         <button
-          className="icon-button icon-recurring"
+          className="icon-button icon-recurring flex items-center justify-center p-2 rounded-full transition-transform transform hover:scale-110"
           onClick={handleIconClick}
         >
           <AiOutlineSync className="text-3xl" title="주기적인 일" />
         </button>
         <button
-          className="icon-button icon-important"
+          className="icon-button icon-important flex items-center justify-center p-2 rounded-full transition-transform transform hover:scale-110"
           onClick={handleIconClick}
         >
           <AiFillStar className="text-3xl" title="중요한 일" />
         </button>
-        <button className="icon-button icon-done" onClick={handleIconClick}>
+        <button
+          className="icon-button icon-done flex items-center justify-center p-2 rounded-full transition-transform transform hover:scale-110"
+          onClick={handleIconClick}
+        >
           <AiFillCheckCircle className="text-3xl" title="완료" />
         </button>
       </div>
