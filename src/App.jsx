@@ -1,9 +1,10 @@
+import { useRef } from "react";
 import React, { useState, useEffect } from "react";
 import "react-calendar/dist/Calendar.css";
 import List1 from "./component/List_1";
 import List2 from "./component/List_2";
-import IconList from "./component/IconList"; // 경로 확인
-import "./App.css"; // 커스텀 스타일을 불러옵니다
+import IconList from "./component/IconList";
+import "./App.css";
 import Header from "./component/Header";
 import Middle from "./component/Middle";
 import Calen from "./component/Calen";
@@ -18,14 +19,54 @@ function App() {
   const [selectedTodo, setSelectedTodo] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [todos, setTodos] = useState([
-    { id: 1, event: "설거지하기", date: "2024-06-25" },
-    { id: 2, event: "빨래하기", date: "2024-06-25" },
-    { id: 3, event: "공부하기", date: "2024-06-25" },
-  ]);
+  // const [todos, setTodos] = useState([
+  //   {
+  //     id: 1,
+  //     event: "설거지하기",
+  //     date: "2024-06-25",
+  //     status: "미완료",
+  //     recurring: false,
+  //     important: false,
+  //   },
+  //   {
+  //     id: 2,
+  //     event: "빨래하기",
+  //     date: "2024-06-25",
+  //     status: "완료",
+  //     recurring: true,
+  //     important: false,
+  //   },
+  //   {
+  //     id: 3,
+  //     event: "공부하기",
+  //     date: "2024-06-25",
+  //     status: "미완료",
+  //     recurring: false,
+  //     important: true,
+  //   },
+  //   {
+  //     id: 4,
+  //     event: "운동하기",
+  //     date: "2024-06-26",
+  //     status: "완료",
+  //     recurring: false,
+  //     important: false,
+  //   },
+  //   {
+  //     id: 5,
+  //     event: "코딩하기",
+  //     date: "2024-06-26",
+  //     status: "미완료",
+  //     recurring: true,
+  //     important: true,
+  //   },
+  // ]);
+  const [todos, setTodos] = useState([]);
+
   const navigate = useNavigate();
   const [list1Value, setList1Value] = useState([]);
   const [list1Name, setList1Name] = useState([]);
+  const catRef = useRef(null);
 
   useEffect(() => {
     setDropdownValue("전체");
@@ -33,7 +74,27 @@ function App() {
     setCurrentView("calendar");
     setSelectedTodo(null);
     setSelectedDate(new Date());
+
+    // API 호출로 초기 데이터 가져오기
+    axios
+      .get("http://localhost:3001/api/todos/list")
+      .then((res) => {
+        setTodos(res.data); // 서버에서 받아온 할일 목록을 설정합니다.
+      })
+      .catch((error) => {
+        console.error("할일 목록 불러오기 오류:", error);
+      });
   }, [isLoggedIn]);
+
+  const handleTodolistClick = () => {
+    const cat = catRef.current;
+    cat.style.display = "block";
+    cat.style.animation = "moveCat 5s linear";
+    setTimeout(() => {
+      cat.style.display = "none";
+      cat.style.animation = "none";
+    }, 5000);
+  };
 
   const handleDropdownChange = (event) => {
     setDropdownValue(event.target.value);
@@ -44,7 +105,7 @@ function App() {
   };
 
   const handleIconClick = (event) => {
-    setSelectedDate(new Date()); // 아이콘 클릭 시 선택된 날짜를 현재 날짜로 설정
+    setSelectedDate(new Date());
     setCurrentView("iconList");
     setList1Name(event);
     switch (event) {
@@ -92,8 +153,23 @@ function App() {
   };
 
   const handleDateClick = (date) => {
-    setSelectedDate(date);
+    const clickedDate = new Date(date); // 이벤트에서 날짜 값을 가져와 Date 객체로 변환
+    const viewDate = new Date(date);
+    clickedDate.setDate(clickedDate.getDate() + 1);
+    // 원하는 날짜 포맷으로 변환
+    const formattedDate = clickedDate.toISOString().split("T")[0]; // "yyyy-MM-dd" 형식으로 변환
+    const viewFormattedDate = viewDate.toISOString().split("T")[0]; // "yyyy-MM-dd" 형식으로 변환
+    setSelectedDate(viewFormattedDate);
     setCurrentView("list1");
+    console.log(formattedDate);
+    axios
+      .get(`http://localhost:3001/api/todos?dueDate=${formattedDate}`)
+      .then((res) => {
+        setList1Value(res.data);
+      })
+      .catch((error) => {
+        console.error("Error occurred on fetching", error);
+      });
   };
 
   const handleSelectTodo = (todo) => {
@@ -118,14 +194,6 @@ function App() {
     navigate("/");
   };
 
-  // const handleSearch = (event) => {
-  //   const keyword = event.target.value.toLowerCase();
-  //   const filteredTodos = todos.filter((todo) =>
-  //     todo.event.toLowerCase().includes(keyword)
-  //   );
-  //   setTodos(filteredTodos);
-  // };
-
   return (
     <div className="App min-h-screen flex flex-col bg-dark text-dark transition-colors duration-300">
       <Header
@@ -135,12 +203,13 @@ function App() {
         handleSearchCategoryChange={handleSearchCategoryChange}
         handleLogout={handleLogout}
         isLoggedIn={isLoggedIn}
+        handleTodolistClick={handleTodolistClick} // 핸들러 추가
       />
       <div className="content flex flex-col gap-10 mt-20 mx-auto max-w-screen-lg p-4">
         {currentView === "calendar" && (
           <>
             <Middle handleIconClick={handleIconClick} />
-            <Calen handleDateClick={handleDateClick} />
+            <Calen handleDateClick={handleDateClick} todos={todos} />
           </>
         )}
         {currentView === "list1" && (
@@ -149,8 +218,8 @@ function App() {
               date={selectedDate}
               onSelectTodo={handleSelectTodo}
               onBack={handleBackToCalendar}
-              todos={todos}
-              setTodos={setTodos}
+              todos={list1Value} // todos 상태를 List1 컴포넌트로 전달합니다.
+              setTodos={setTodos} // setTodos 함수도 List1 컴포넌트로 전달합니다.
               list1Value={list1Value}
             />
           </div>
@@ -176,6 +245,7 @@ function App() {
           onClick={handleBackToCalendar}
         ></div>
       )}
+      <img ref={catRef} src="/cat.PNG" className="cat" alt="cat" />
     </div>
   );
 }
