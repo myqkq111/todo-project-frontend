@@ -20,7 +20,9 @@ function Calen({ handleDateClick, todos }) {
     <div className="calendar-container relative mb-1 bg-white text-black shadow-md rounded-md ">
       <Calendar
         className="w-full border-none"
-        onClickDay={handleDateClick}
+        onClickDay={(event) => {
+          handleDateClick(event);
+        }}
         tileContent={tileContent}
         tileClassName={({ date, view }) => {
           if (view === "month") {

@@ -19,48 +19,50 @@ function App() {
   const [selectedTodo, setSelectedTodo] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [todos, setTodos] = useState([
-    {
-      id: 1,
-      event: "설거지하기",
-      date: "2024-06-25",
-      status: "미완료",
-      recurring: false,
-      important: false,
-    },
-    {
-      id: 2,
-      event: "빨래하기",
-      date: "2024-06-25",
-      status: "완료",
-      recurring: true,
-      important: false,
-    },
-    {
-      id: 3,
-      event: "공부하기",
-      date: "2024-06-25",
-      status: "미완료",
-      recurring: false,
-      important: true,
-    },
-    {
-      id: 4,
-      event: "운동하기",
-      date: "2024-06-26",
-      status: "완료",
-      recurring: false,
-      important: false,
-    },
-    {
-      id: 5,
-      event: "코딩하기",
-      date: "2024-06-26",
-      status: "미완료",
-      recurring: true,
-      important: true,
-    },
-  ]);
+  // const [todos, setTodos] = useState([
+  //   {
+  //     id: 1,
+  //     event: "설거지하기",
+  //     date: "2024-06-25",
+  //     status: "미완료",
+  //     recurring: false,
+  //     important: false,
+  //   },
+  //   {
+  //     id: 2,
+  //     event: "빨래하기",
+  //     date: "2024-06-25",
+  //     status: "완료",
+  //     recurring: true,
+  //     important: false,
+  //   },
+  //   {
+  //     id: 3,
+  //     event: "공부하기",
+  //     date: "2024-06-25",
+  //     status: "미완료",
+  //     recurring: false,
+  //     important: true,
+  //   },
+  //   {
+  //     id: 4,
+  //     event: "운동하기",
+  //     date: "2024-06-26",
+  //     status: "완료",
+  //     recurring: false,
+  //     important: false,
+  //   },
+  //   {
+  //     id: 5,
+  //     event: "코딩하기",
+  //     date: "2024-06-26",
+  //     status: "미완료",
+  //     recurring: true,
+  //     important: true,
+  //   },
+  // ]);
+  const [todos, setTodos] = useState([]);
+
   const navigate = useNavigate();
   const [list1Value, setList1Value] = useState([]);
   const [list1Name, setList1Name] = useState([]);
@@ -72,6 +74,16 @@ function App() {
     setCurrentView("calendar");
     setSelectedTodo(null);
     setSelectedDate(new Date());
+
+    // API 호출로 초기 데이터 가져오기
+    axios
+      .get("http://localhost:3001/api/todos/list")
+      .then((res) => {
+        setTodos(res.data); // 서버에서 받아온 할일 목록을 설정합니다.
+      })
+      .catch((error) => {
+        console.error("할일 목록 불러오기 오류:", error);
+      });
   }, [isLoggedIn]);
 
   const handleTodolistClick = () => {
@@ -141,8 +153,23 @@ function App() {
   };
 
   const handleDateClick = (date) => {
-    setSelectedDate(date);
+    const clickedDate = new Date(date); // 이벤트에서 날짜 값을 가져와 Date 객체로 변환
+    const viewDate = new Date(date);
+    clickedDate.setDate(clickedDate.getDate() + 1);
+    // 원하는 날짜 포맷으로 변환
+    const formattedDate = clickedDate.toISOString().split("T")[0]; // "yyyy-MM-dd" 형식으로 변환
+    const viewFormattedDate = viewDate.toISOString().split("T")[0]; // "yyyy-MM-dd" 형식으로 변환
+    setSelectedDate(viewFormattedDate);
     setCurrentView("list1");
+    console.log(formattedDate);
+    axios
+      .get(`http://localhost:3001/api/todos?dueDate=${formattedDate}`)
+      .then((res) => {
+        setList1Value(res.data);
+      })
+      .catch((error) => {
+        console.error("Error occurred on fetching", error);
+      });
   };
 
   const handleSelectTodo = (todo) => {
@@ -190,8 +217,8 @@ function App() {
               date={selectedDate}
               onSelectTodo={handleSelectTodo}
               onBack={handleBackToCalendar}
-              todos={todos}
-              setTodos={setTodos}
+              todos={list1Value} // todos 상태를 List1 컴포넌트로 전달합니다.
+              setTodos={setTodos} // setTodos 함수도 List1 컴포넌트로 전달합니다.
               list1Value={list1Value}
             />
           </div>

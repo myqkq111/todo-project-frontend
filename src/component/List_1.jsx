@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { AiOutlinePlus, AiOutlineSync, AiFillStar } from "react-icons/ai"; // 주기적인 일과 중요한 일 아이콘 추가
+import axios from "axios";
 
 function List1({ date, onSelectTodo, todos, setTodos }) {
   const [newTodo, setNewTodo] = useState("");
@@ -15,19 +16,30 @@ function List1({ date, onSelectTodo, todos, setTodos }) {
   const selectedDateString = adjustDate(date);
 
   const addTodo = () => {
-    if (newTodo.trim() !== "") {
-      const newTodoItem = {
-        id: todos.length + 1,
-        event: newTodo,
-        date: selectedDateString,
-        status: "미완료", // 기본 상태를 미완료로 설정
-        recurring: false, // 기본 값으로 설정
-        important: false, // 기본 값으로 설정
-      };
-      setTodos([...todos, newTodoItem]);
-      setNewTodo("");
-      setShowInput(false);
-    }
+    // if (newTodo.trim() !== "") {
+    //   const newTodoItem = {
+    //     id: todos.length + 1,
+    //     event: newTodo,
+    //     date: selectedDateString,
+    //     status: "미완료", // 기본 상태를 미완료로 설정
+    //     recurring: false, // 기본 값으로 설정
+    //     important: false, // 기본 값으로 설정
+    //     title: newTodo,
+    //     contents: "", // 필요에 따라 추가 필드를 더 넣습니다.
+    //     categori: "일상", // 예시: categori는 애플리케이션 로직에 따라 동적으로 할당하거나 하드코딩할 수 있습니다.
+    //     dueDate: selectedDateString,
+    //     userId: "667b7be3e4220d59f2d58835", // 예시: 실제 인증에서 얻은 사용자 ID로 교체합니다.
+    //   };
+    axios
+      .post("http://localhost:3001/api/todos/new", newTodoItem)
+      .then((res) => {
+        setTodos([...todos, res.data]);
+        setNewTodo("");
+        setShowInput(false);
+      })
+      .catch((error) => {
+        console.error("할일 생성 오류:", error);
+      });
   };
 
   const handleKeyPress = (e) => {
@@ -63,16 +75,16 @@ function List1({ date, onSelectTodo, todos, setTodos }) {
       )}
       <ul className="flex flex-col items-center">
         {todos
-          .filter((todo) => todo.date === selectedDateString)
-          .map((todo) => (
+          // .filter((todo) => todo.date === selectedDateString)
+          .map((todo, index) => (
             <li
-              key={todo.id}
+              key={index}
               className={`flex justify-between w-full mb-2 p-2 border-b border-gray-300 cursor-pointer ${
                 todo.status === "미완료" ? "text-black" : "text-gray-500"
               } font-bold`}
               onClick={() => onSelectTodo(todo)}
             >
-              <span>{todo.event}</span>
+              <span>{todo.title}</span>
               <div className="flex items-center ml-2">
                 {todo.recurring &&
                   (todo.status === "미완료" ? (
