@@ -6,7 +6,9 @@ import "./App.css"; // 커스텀 스타일을 불러옵니다
 import Header from "./component/Header";
 import Middle from "./component/Middle";
 import Calen from "./component/Calen";
+import FilterView from "./component/FilterView";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function App() {
   // const [value, setValue] = useState(new Date()); //캘린더에 필요한데 아직 사용 용도를 모르겠음
@@ -17,6 +19,8 @@ function App() {
   const [selectedDate, setSelectedDate] = useState(new Date()); // 기본값을 현재 날짜로 설정
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
+  const [list1Value, setList1Value] = useState([]);
+  const [list1Name, setList1Name] = useState([]);
 
   const handleDropdownChange = (event) => {
     setDropdownValue(event.target.value);
@@ -26,9 +30,52 @@ function App() {
     setSearchCategory(event.target.value);
   };
 
-  const handleIconClick = () => {
+  const handleIconClick = (event) => {
     setSelectedDate(new Date()); // 아이콘 클릭 시 선택된 날짜를 현재 날짜로 설정
-    setCurrentView("list1");
+    setCurrentView("filterView");
+    setList1Name(event);
+    switch (event) {
+      case "미완료":
+        axios
+          .get("http://localhost:3000/api/filter/failedSchedule")
+          .then((res) => {
+            setList1Value(res.data);
+          })
+          .catch((error) => {
+            console.error("Error occurred on fetching", error);
+          });
+        break;
+      case "주기적인 일":
+        axios
+          .get("http://localhost:3000/api/filter/recurringEvent")
+          .then((res) => {
+            setList1Value(res.data);
+          })
+          .catch((error) => {
+            console.error("Error occurred on fetching", error);
+          });
+        break;
+      case "중요한 일":
+        axios
+          .get("http://localhost:3000/api/filter/isImportant")
+          .then((res) => {
+            setList1Value(res.data);
+          })
+          .catch((error) => {
+            console.error("Error occurred on fetching", error);
+          });
+        break;
+      case "완료":
+        axios
+          .get("http://localhost:3000/api/filter/completed")
+          .then((res) => {
+            setList1Value(res.data);
+          })
+          .catch((error) => {
+            console.error("Error occurred on fetching", error);
+          });
+        break;
+    }
   };
 
   const handleDateClick = (date) => {
@@ -80,6 +127,19 @@ function App() {
               date={selectedDate}
               onSelectTodo={handleSelectTodo}
               onBack={handleBackToCalendar}
+              list1Value={list1Value}
+            />
+          </div>
+        )}
+        {currentView === "filterView" && (
+          <div className="modal fixed top-1/2 left-1/2 w-10/12 max-w-lg transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg z-50">
+            <FilterView
+              date={selectedDate}
+              onSelectTodo={handleSelectTodo}
+              onBack={handleBackToCalendar}
+              list1Value={list1Value}
+              list1Name={list1Name}
+              handleIconClick={handleIconClick}
             />
           </div>
         )}
@@ -89,7 +149,9 @@ function App() {
           </div>
         )}
       </div>
-      {(currentView === "list1" || currentView === "list2") && (
+      {(currentView === "list1" ||
+        currentView === "list2" ||
+        currentView === "filterView") && (
         <div
           className="modal-overlay fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-40"
           onClick={handleBackToCalendar}
