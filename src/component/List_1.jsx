@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AiOutlinePlus } from "react-icons/ai";
+import { AiOutlinePlus, AiOutlineSync, AiFillStar } from "react-icons/ai"; // 주기적인 일과 중요한 일 아이콘 추가
 
 function List1({ date, onSelectTodo, todos, setTodos }) {
   const [newTodo, setNewTodo] = useState("");
@@ -20,6 +20,9 @@ function List1({ date, onSelectTodo, todos, setTodos }) {
         id: todos.length + 1,
         event: newTodo,
         date: selectedDateString,
+        status: "미완료", // 기본 상태를 미완료로 설정
+        recurring: false, // 기본 값으로 설정
+        important: false, // 기본 값으로 설정
       };
       setTodos([...todos, newTodoItem]);
       setNewTodo("");
@@ -54,7 +57,7 @@ function List1({ date, onSelectTodo, todos, setTodos }) {
             onChange={(e) => setNewTodo(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="새 할일 입력"
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-md text-black"
           />
         </div>
       )}
@@ -64,11 +67,28 @@ function List1({ date, onSelectTodo, todos, setTodos }) {
           .map((todo) => (
             <li
               key={todo.id}
-              className="flex justify-center w-full mb-2 p-2 border-b border-gray-300 cursor-pointer"
+              className={`flex justify-between w-full mb-2 p-2 border-b border-gray-300 cursor-pointer ${
+                todo.status === "미완료" ? "text-black" : "text-gray-500"
+              } font-bold`}
               onClick={() => onSelectTodo(todo)}
-              style={{ color: "black", fontWeight: "bold" }}
             >
               <span>{todo.event}</span>
+              <div className="flex items-center ml-2">
+                {todo.recurring &&
+                  (todo.status === "미완료" ? (
+                    <AiOutlineSync className="text-yellow-500 ml-1" />
+                  ) : (
+                    <AiOutlineSync className="text-gray-300 ml-1" />
+                  ))}{" "}
+                {/* 주기적인 일 아이콘 */}
+                {todo.important &&
+                  (todo.status === "미완료" ? (
+                    <AiFillStar className="text-red-500 ml-1" />
+                  ) : (
+                    <AiFillStar className="text-gray-300 ml-1" />
+                  ))}{" "}
+                {/* 중요한 일 아이콘 */}
+              </div>
             </li>
           ))}
       </ul>

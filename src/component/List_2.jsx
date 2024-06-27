@@ -106,9 +106,9 @@ function List2({ todo, onBack }) {
           )}
         </button>
       </div>
-      <div className="flex justify-between mb-5">
+      <div className="flex justify-between mb-5 text-2xl font-bold">
         <span>
-          D-
+          D{" "}
           {Math.ceil((new Date(newDate) - new Date()) / (1000 * 60 * 60 * 24))}
         </span>
         <input
@@ -118,48 +118,54 @@ function List2({ todo, onBack }) {
           className="border border-gray-300 rounded"
         />
       </div>
-      <div className="flex items-center mb-5">
-        <input
-          type="checkbox"
-          checked={isRecurring}
-          onChange={handleRecurringToggle}
-          className="mr-2"
-        />
-        <span>주기적인 일</span>
-      </div>
-      {isRecurring && (
-        <div className="mb-5">
-          <div className="mb-2">
-            <span>날짜: </span>
-            <input
-              type="date"
-              value={recurringDate}
-              onChange={handleRecurringDateChange}
-              className="border border-gray-300 rounded"
-            />
-          </div>
-          <div>
-            <span>반복 기간: </span>
-            <input
-              type="number"
-              value={recurringPeriod}
-              onChange={handleRecurringPeriodChange}
-              className="border border-gray-300 rounded"
-            />
-          </div>
-          <div className="mt-2">
-            <span>
-              예정일: {calculateNextDate(recurringDate, recurringPeriod)}
-            </span>
-          </div>
+      <div className="space-y-6">
+        <div className="flex items-center mb-5">
+          <input
+            type="checkbox"
+            checked={isRecurring}
+            onChange={handleRecurringToggle}
+            className="mr-2"
+          />
+          <span>주기적인 일</span>
         </div>
-      )}
-      <textarea
-        value={memo}
-        onChange={(e) => setMemo(e.target.value)}
-        placeholder="메모"
-        className="w-full p-2 text-sm border border-gray-300 rounded"
-      />
+        {isRecurring && (
+          <div className="space-y-4">
+            <div className="mb-2">
+              <span>날짜 : </span>
+              <input
+                type="date"
+                value={recurringDate}
+                onChange={handleRecurringDateChange}
+                className="border border-gray-300 rounded"
+              />
+            </div>
+            <div>
+              <span>반복 기간 : </span>
+              <input
+                type="number"
+                value={recurringPeriod}
+                onChange={handleRecurringPeriodChange}
+                className="border border-gray-300 rounded"
+              />
+            </div>
+            <div className="mt-2">
+              <span>
+                예정일 :{" "}
+                {calculateNextDate(recurringDate, recurringPeriod)
+                  .split("-")
+                  .join(" - ")}
+              </span>
+            </div>
+          </div>
+        )}
+
+        <textarea
+          value={memo}
+          onChange={(e) => setMemo(e.target.value)}
+          placeholder="메모"
+          className="w-full p-2 text-sm border border-gray-300 rounded"
+        />
+      </div>
       <div className="flex justify-between mt-5">
         <button
           onClick={handleDelete}

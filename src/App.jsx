@@ -1,9 +1,10 @@
+import { useRef } from "react";
 import React, { useState, useEffect } from "react";
 import "react-calendar/dist/Calendar.css";
 import List1 from "./component/List_1";
 import List2 from "./component/List_2";
-import IconList from "./component/IconList"; // 경로 확인
-import "./App.css"; // 커스텀 스타일을 불러옵니다
+import IconList from "./component/IconList";
+import "./App.css";
 import Header from "./component/Header";
 import Middle from "./component/Middle";
 import Calen from "./component/Calen";
@@ -19,13 +20,51 @@ function App() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [todos, setTodos] = useState([
-    { id: 1, event: "설거지하기", date: "2024-06-25" },
-    { id: 2, event: "빨래하기", date: "2024-06-25" },
-    { id: 3, event: "공부하기", date: "2024-06-25" },
+    {
+      id: 1,
+      event: "설거지하기",
+      date: "2024-06-25",
+      status: "미완료",
+      recurring: false,
+      important: false,
+    },
+    {
+      id: 2,
+      event: "빨래하기",
+      date: "2024-06-25",
+      status: "완료",
+      recurring: true,
+      important: false,
+    },
+    {
+      id: 3,
+      event: "공부하기",
+      date: "2024-06-25",
+      status: "미완료",
+      recurring: false,
+      important: true,
+    },
+    {
+      id: 4,
+      event: "운동하기",
+      date: "2024-06-26",
+      status: "완료",
+      recurring: false,
+      important: false,
+    },
+    {
+      id: 5,
+      event: "코딩하기",
+      date: "2024-06-26",
+      status: "미완료",
+      recurring: true,
+      important: true,
+    },
   ]);
   const navigate = useNavigate();
   const [list1Value, setList1Value] = useState([]);
   const [list1Name, setList1Name] = useState([]);
+  const catRef = useRef(null);
 
   useEffect(() => {
     setDropdownValue("전체");
@@ -34,6 +73,16 @@ function App() {
     setSelectedTodo(null);
     setSelectedDate(new Date());
   }, [isLoggedIn]);
+
+  const handleTodolistClick = () => {
+    const cat = catRef.current;
+    cat.style.display = "block";
+    cat.style.animation = "moveCat 5s linear";
+    setTimeout(() => {
+      cat.style.display = "none";
+      cat.style.animation = "none";
+    }, 5000);
+  };
 
   const handleDropdownChange = (event) => {
     setDropdownValue(event.target.value);
@@ -44,7 +93,7 @@ function App() {
   };
 
   const handleIconClick = (event) => {
-    setSelectedDate(new Date()); // 아이콘 클릭 시 선택된 날짜를 현재 날짜로 설정
+    setSelectedDate(new Date());
     setCurrentView("iconList");
     setList1Name(event);
     switch (event) {
@@ -117,14 +166,6 @@ function App() {
     navigate("/");
   };
 
-  // const handleSearch = (event) => {
-  //   const keyword = event.target.value.toLowerCase();
-  //   const filteredTodos = todos.filter((todo) =>
-  //     todo.event.toLowerCase().includes(keyword)
-  //   );
-  //   setTodos(filteredTodos);
-  // };
-
   return (
     <div className="App min-h-screen flex flex-col bg-dark text-dark transition-colors duration-300">
       <Header
@@ -134,12 +175,13 @@ function App() {
         handleSearchCategoryChange={handleSearchCategoryChange}
         handleLogout={handleLogout}
         isLoggedIn={isLoggedIn}
+        handleTodolistClick={handleTodolistClick} // 핸들러 추가
       />
       <div className="content flex flex-col gap-10 mt-20 mx-auto max-w-screen-lg p-4">
         {currentView === "calendar" && (
           <>
             <Middle handleIconClick={handleIconClick} />
-            <Calen handleDateClick={handleDateClick} />
+            <Calen handleDateClick={handleDateClick} todos={todos} />
           </>
         )}
         {currentView === "list1" && (
@@ -171,6 +213,7 @@ function App() {
           onClick={handleBackToCalendar}
         ></div>
       )}
+      <img ref={catRef} src="/cat.PNG" className="cat" alt="cat" />
     </div>
   );
 }
