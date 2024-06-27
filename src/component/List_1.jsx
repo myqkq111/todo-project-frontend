@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import { BsCircle, BsCheckCircleFill } from "react-icons/bs";
 import { AiOutlineStar, AiFillStar, AiOutlinePlus } from "react-icons/ai";
 
-function List1({ date, onSelectTodo, onBack }) {
+function List1({ date, onSelectTodo, onBack, list1Value }) {
   const [events, setEvents] = useState([
     {
       id: 1,
       event: "스키마 만들기",
-      date: "2024-06-24",
+      date: "2024-06-26",
       completed: false,
       favorite: false,
     },
@@ -34,6 +34,7 @@ function List1({ date, onSelectTodo, onBack }) {
     },
   ]);
 
+  // 완료버튼
   const toggleComplete = (id) => {
     setEvents(
       events.map((event) =>
@@ -42,6 +43,7 @@ function List1({ date, onSelectTodo, onBack }) {
     );
   };
 
+  // 중요 버튼
   const toggleFavorite = (id) => {
     setEvents(
       events.map((event) =>
@@ -68,9 +70,9 @@ function List1({ date, onSelectTodo, onBack }) {
           .filter(
             (event) => !date || event.date === date.toISOString().split("T")[0]
           )
-          .map((event) => (
+          .map((event, index) => (
             <div
-              key={event.id}
+              key={index}
               className="flex justify-between items-center p-2 border-b border-gray-300"
               onClick={() => onSelectTodo(event)}
             >
@@ -103,6 +105,45 @@ function List1({ date, onSelectTodo, onBack }) {
               </button>
             </div>
           ))}
+        {/* {list1Value
+          .filter(
+            (event) => !date || event.date === date.toISOString().split("T")[0]
+          )
+          .map((event, index) => (
+            <div
+              key={index}
+              className="flex justify-between items-center p-2 border-b border-gray-300"
+              onClick={() => onSelectTodo(event)}
+            >
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleComplete(event.userId);
+                }}
+                className="bg-transparent border-none text-2xl cursor-pointer"
+              >
+                {event.completed ? (
+                  <BsCheckCircleFill className="text-black" />
+                ) : (
+                  <BsCircle />
+                )}
+              </button>
+              <span>{event.event}</span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleFavorite(event.id);
+                }}
+                className="bg-transparent border-none text-2xl cursor-pointer"
+              >
+                {event.favorite ? (
+                  <AiFillStar className="text-yellow-500" />
+                ) : (
+                  <AiOutlineStar />
+                )}
+              </button>
+            </div>
+          ))} */}
       </div>
     </div>
   );
