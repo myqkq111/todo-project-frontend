@@ -6,8 +6,8 @@ function Middle({ handleIconClick }) {
     <>
       <div className="icons flex justify-around px-4 mt-8">
         <button
+          className="icon-button icon-current flex items-center justify-center p-2 rounded-full transition-transform transform hover:scale-110"
           id="미완료"
-          className="icon-button icon-current"
           onClick={(event) => {
             handleIconClick(event.currentTarget.id);
           }}
@@ -15,8 +15,8 @@ function Middle({ handleIconClick }) {
           <AiOutlineClose className="text-3xl" title="미완료" />
         </button>
         <button
+          className="icon-button icon-recurring flex items-center justify-center p-2 rounded-full transition-transform transform hover:scale-110"
           id="주기적인 일"
-          className="icon-button icon-recurring"
           onClick={(event) => {
             handleIconClick(event.currentTarget.id);
           }}
@@ -24,8 +24,8 @@ function Middle({ handleIconClick }) {
           <AiOutlineSync className="text-3xl" title="주기적인 일" />
         </button>
         <button
+          className="icon-button icon-important flex items-center justify-center p-2 rounded-full transition-transform transform hover:scale-110"
           id="중요한 일"
-          className="icon-button icon-important"
           onClick={(event) => {
             handleIconClick(event.currentTarget.id);
           }}
@@ -33,8 +33,8 @@ function Middle({ handleIconClick }) {
           <AiFillStar className="text-3xl" title="중요한 일" />
         </button>
         <button
+          className="icon-button icon-done flex items-center justify-center p-2 rounded-full transition-transform transform hover:scale-110"
           id="완료"
-          className="icon-button icon-done"
           onClick={(event) => {
             handleIconClick(event.currentTarget.id);
           }}

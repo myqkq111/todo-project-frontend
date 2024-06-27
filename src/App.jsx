@@ -1,26 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "react-calendar/dist/Calendar.css";
 import List1 from "./component/List_1";
 import List2 from "./component/List_2";
+import IconList from "./component/IconList"; // 경로 확인
 import "./App.css"; // 커스텀 스타일을 불러옵니다
 import Header from "./component/Header";
 import Middle from "./component/Middle";
 import Calen from "./component/Calen";
-import FilterView from "./component/FilterView";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function App() {
-  // const [value, setValue] = useState(new Date()); //캘린더에 필요한데 아직 사용 용도를 모르겠음
+  const [value, setValue] = useState(new Date());
   const [dropdownValue, setDropdownValue] = useState("전체");
   const [searchCategory, setSearchCategory] = useState("전체 검색");
-  const [currentView, setCurrentView] = useState("calendar"); // 'calendar', 'list1', 'list2'
-  const [selectedTodo, setSelectedTodo] = useState(null); // 선택된 할일
-  const [selectedDate, setSelectedDate] = useState(new Date()); // 기본값을 현재 날짜로 설정
+  const [currentView, setCurrentView] = useState("calendar");
+  const [selectedTodo, setSelectedTodo] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [todos, setTodos] = useState([
+    { id: 1, event: "설거지하기", date: "2024-06-25" },
+    { id: 2, event: "빨래하기", date: "2024-06-25" },
+    { id: 3, event: "공부하기", date: "2024-06-25" },
+  ]);
   const navigate = useNavigate();
   const [list1Value, setList1Value] = useState([]);
   const [list1Name, setList1Name] = useState([]);
+
+  useEffect(() => {
+    setDropdownValue("전체");
+    setSearchCategory("전체 검색");
+    setCurrentView("calendar");
+    setSelectedTodo(null);
+    setSelectedDate(new Date());
+  }, [isLoggedIn]);
 
   const handleDropdownChange = (event) => {
     setDropdownValue(event.target.value);
@@ -32,7 +45,7 @@ function App() {
 
   const handleIconClick = (event) => {
     setSelectedDate(new Date()); // 아이콘 클릭 시 선택된 날짜를 현재 날짜로 설정
-    setCurrentView("filterView");
+    setCurrentView("iconList");
     setList1Name(event);
     switch (event) {
       case "미완료":
@@ -95,7 +108,7 @@ function App() {
 
   const handleBackToCalendar = () => {
     setSelectedTodo(null);
-    setSelectedDate(new Date()); // 기본값을 현재 날짜로 설정
+    setSelectedDate(new Date());
     setCurrentView("calendar");
   };
 
@@ -103,6 +116,14 @@ function App() {
     setIsLoggedIn(false);
     navigate("/");
   };
+
+  // const handleSearch = (event) => {
+  //   const keyword = event.target.value.toLowerCase();
+  //   const filteredTodos = todos.filter((todo) =>
+  //     todo.event.toLowerCase().includes(keyword)
+  //   );
+  //   setTodos(filteredTodos);
+  // };
 
   return (
     <div className="App min-h-screen flex flex-col bg-dark text-dark transition-colors duration-300">
@@ -122,36 +143,29 @@ function App() {
           </>
         )}
         {currentView === "list1" && (
-          <div className="modal fixed top-1/2 left-1/2 w-10/12 max-w-lg transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg z-50">
+          <div className="modal fixed top-1/2 left-1/2 w-10/12 max-w-lg transform -translate-x-1/2 -translate-y-1/2 bg-dark text-dark p-6 rounded-lg shadow-lg z-50">
             <List1
               date={selectedDate}
               onSelectTodo={handleSelectTodo}
               onBack={handleBackToCalendar}
+              todos={todos}
+              setTodos={setTodos}
               list1Value={list1Value}
-            />
-          </div>
-        )}
-        {currentView === "filterView" && (
-          <div className="modal fixed top-1/2 left-1/2 w-10/12 max-w-lg transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg z-50">
-            <FilterView
-              date={selectedDate}
-              onSelectTodo={handleSelectTodo}
-              onBack={handleBackToCalendar}
-              list1Value={list1Value}
-              list1Name={list1Name}
-              handleIconClick={handleIconClick}
             />
           </div>
         )}
         {currentView === "list2" && selectedTodo && (
-          <div className="modal fixed top-1/2 left-1/2 w-10/12 max-w-lg transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg z-50">
+          <div className="modal fixed top-1/2 left-1/2 w-10/12 max-w-lg transform -translate-x-1/2 -translate-y-1/2 bg-dark text-dark p-6 rounded-lg shadow-lg z-50">
             <List2 todo={selectedTodo} onBack={handleBackToList1} />
           </div>
+        )}
+        {currentView === "iconList" && (
+          <IconList todos={todos} onSelectTodo={handleSelectTodo} />
         )}
       </div>
       {(currentView === "list1" ||
         currentView === "list2" ||
-        currentView === "filterView") && (
+        currentView === "iconList") && (
         <div
           className="modal-overlay fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-40"
           onClick={handleBackToCalendar}
