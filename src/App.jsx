@@ -8,8 +8,9 @@ import "./App.css";
 import Header from "./component/Header";
 import Middle from "./component/Middle";
 import Calen from "./component/Calen";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Routes, Route } from "react-router-dom";
 import axios from "axios";
+import Profile from "./component/Profile";
 
 function App() {
   const [value, setValue] = useState(new Date());
@@ -19,54 +20,18 @@ function App() {
   const [selectedTodo, setSelectedTodo] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  // const [todos, setTodos] = useState([
-  //   {
-  //     id: 1,
-  //     event: "설거지하기",
-  //     date: "2024-06-25",
-  //     status: "미완료",
-  //     recurring: false,
-  //     important: false,
-  //   },
-  //   {
-  //     id: 2,
-  //     event: "빨래하기",
-  //     date: "2024-06-25",
-  //     status: "완료",
-  //     recurring: true,
-  //     important: false,
-  //   },
-  //   {
-  //     id: 3,
-  //     event: "공부하기",
-  //     date: "2024-06-25",
-  //     status: "미완료",
-  //     recurring: false,
-  //     important: true,
-  //   },
-  //   {
-  //     id: 4,
-  //     event: "운동하기",
-  //     date: "2024-06-26",
-  //     status: "완료",
-  //     recurring: false,
-  //     important: false,
-  //   },
-  //   {
-  //     id: 5,
-  //     event: "코딩하기",
-  //     date: "2024-06-26",
-  //     status: "미완료",
-  //     recurring: true,
-  //     important: true,
-  //   },
-  // ]);
   const [todos, setTodos] = useState([]);
-
-  const navigate = useNavigate();
   const [list1Value, setList1Value] = useState([]);
   const [list1Name, setList1Name] = useState([]);
+  const navigate = useNavigate();
   const catRef = useRef(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
 
   useEffect(() => {
     setDropdownValue("전체");
@@ -189,9 +154,15 @@ function App() {
     setCurrentView("calendar");
   };
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      await axios.post("http://localhost:3000/logout");
+      localStorage.removeItem("token");
+      setIsLoggedIn(false);
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
   };
 
   return (
@@ -201,8 +172,8 @@ function App() {
         searchCategory={searchCategory}
         handleDropdownChange={handleDropdownChange}
         handleSearchCategoryChange={handleSearchCategoryChange}
-        handleLogout={handleLogout}
         isLoggedIn={isLoggedIn}
+        handleLogout={handleLogout}
         handleTodolistClick={handleTodolistClick} // 핸들러 추가
       />
       <div className="content flex flex-col gap-10 mt-20 mx-auto max-w-screen-lg p-4">
@@ -246,8 +217,15 @@ function App() {
         ></div>
       )}
       <img ref={catRef} src="/cat.PNG" className="cat" alt="cat" />
+
+      {/* 프로필 페이지 라우트 설정 */}
+      <Routes>
+        <Route path="/profile" element={<Profile />} />
+      </Routes>
     </div>
   );
 }
 
 export default App;
+
+
