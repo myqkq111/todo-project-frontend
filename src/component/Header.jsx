@@ -1,3 +1,4 @@
+import React from "react";
 import { Link } from "react-router-dom";
 
 function Header({
@@ -7,6 +8,7 @@ function Header({
   handleSearchCategoryChange,
   isLoggedIn,
   handleLogout,
+  handleDelete, // 추가: 회원 탈퇴 기능 핸들러
   handleTodolistClick,
 }) {
   return (
@@ -31,9 +33,26 @@ function Header({
         </div>
         <div className="flex items-center gap-4 mt-2">
           {isLoggedIn ? (
-            <button onClick={handleLogout} className="text-white">
-              로그아웃
-            </button>
+            <>
+              <button
+                onClick={handleLogout}
+                className="py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
+              >
+                로그아웃
+              </button>
+              <button
+                onClick={handleDelete}
+                className="py-2 px-4 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:bg-red-600"
+              >
+                회원 탈퇴
+              </button>
+              <Link
+                to="/update"
+                className="py-2 px-4 bg-yellow-300 text-white rounded-md hover:bg-yellow-400 focus:outline-none focus:bg-yellow-600"
+              >
+                회원정보 수정
+              </Link>
+            </>
           ) : (
             <Link to="/login" className="text-white">
               로그인
