@@ -18,9 +18,7 @@ function Register() {
 
   const checkUsernameAvailability = async () => {
     try {
-      const response = await axios.post("http://localhost:3000/check-username", {
-        username,
-      });
+      const response = await axios.get(`http://localhost:3000/check-username/${username}`);
       setIsUsernameAvailable(response.data.available);
     } catch (error) {
       console.error("Username check failed", error);
