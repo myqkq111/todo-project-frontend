@@ -126,7 +126,6 @@ function App() {
     const viewFormattedDate = viewDate.toISOString().split("T")[0]; // "yyyy-MM-dd" 형식으로 변환
     setSelectedDate(viewFormattedDate);
     setCurrentView("list1");
-    console.log(formattedDate);
     axios
       .get(`http://localhost:3001/api/todos?dueDate=${formattedDate}`)
       .then((res) => {
@@ -138,7 +137,6 @@ function App() {
   };
 
   const handleSelectTodo = (todo) => {
-    console.log(todo);
     setSelectedTodo(todo);
     setCurrentView("list2");
   };
@@ -197,7 +195,7 @@ function App() {
         )}
         {currentView === "list2" && selectedTodo && (
           <div className="modal fixed top-1/2 left-1/2 w-10/12 max-w-lg transform -translate-x-1/2 -translate-y-1/2 bg-dark text-dark p-6 rounded-lg shadow-lg z-50">
-            <List2 todo={selectedTodo} onBack={handleBackToList1} />
+            <List2 todo={selectedTodo} onBack={handleBackToList1} handleSelectTodo={handleSelectTodo}/>
           </div>
         )}
         {currentView === "iconList" && (
