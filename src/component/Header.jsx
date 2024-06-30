@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useRef} from "react";
 import { Link } from "react-router-dom";
 
 function Header({
@@ -10,7 +10,20 @@ function Header({
   handleLogout,
   handleDelete, // 추가: 회원 탈퇴 기능 핸들러
   handleTodolistClick,
+  handleIconClick
 }) {
+  const selectRef = useRef(null);
+  const inputRef = useRef(null);
+
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      if(inputRef.current.value.trim() === ''){
+        alert('검색어를 입력해주세요.');
+        return;
+      }
+      handleIconClick(selectRef.current.value, inputRef.current.value);
+    }
+  }
   return (
     <header className="App-header bg-dark text-dark w-full py-4 fixed top-0 left-0 z-50 shadow-md">
       <div className="max-w-screen-lg mx-auto flex justify-between items-center px-4">
@@ -61,6 +74,7 @@ function Header({
           <div className="controls flex gap-4 items-center mt-2">
             <div className="relative flex items-center">
               <select
+                ref={selectRef}
                 value={searchCategory}
                 onChange={handleSearchCategoryChange}
                 className="absolute left-0 top-0 h-10 px-3 py-2 border border-gray-400 rounded-l-md text-sm bg-white text-black"
@@ -71,9 +85,11 @@ function Header({
                 <option value="직장 검색">직장 검색</option>
               </select>
               <input
+                ref={inputRef}
                 type="text"
                 placeholder="검색"
                 className="pl-32 pr-3 py-2 border border-gray-400 rounded-r-md text-sm bg-white text-black h-10 text-right text-xs"
+                onKeyDown={(event)=> handleKeyPress(event)}
               />
             </div>
           </div>
