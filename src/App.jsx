@@ -69,7 +69,7 @@ function App() {
     setSearchCategory(event.target.value);
   };
 
-  const handleIconClick = (event) => {
+  const handleIconClick = (event, typing) => {
     setSelectedDate(new Date());
     setCurrentView("iconList");
     setList1Name(event);
@@ -107,6 +107,36 @@ function App() {
       case "완료":
         axios
           .get("http://localhost:3000/api/filter/completed")
+          .then((res) => {
+            setList1Value(res.data);
+          })
+          .catch((error) => {
+            console.error("Error occurred on fetching", error);
+          });
+        break;
+      case "전체 검색":
+        axios
+          .get(`http://localhost:3000/api/filter?category=all&typing=${typing}`)
+          .then((res) => {
+            setList1Value(res.data);
+          })
+          .catch((error) => {
+            console.error("Error occurred on fetching", error);
+          });
+        break;
+      case "일상 검색":
+        axios
+          .get(`http://localhost:3000/api/filter?category=dailyLife&typing=${typing}`)
+          .then((res) => {
+            setList1Value(res.data);
+          })
+          .catch((error) => {
+            console.error("Error occurred on fetching", error);
+          });
+        break;
+      case "직장 검색":
+        axios
+          .get(`http://localhost:3000/api/filter?category=workPlace&typing=${typing}`)
           .then((res) => {
             setList1Value(res.data);
           })
@@ -173,6 +203,7 @@ function App() {
         isLoggedIn={isLoggedIn}
         handleLogout={handleLogout}
         handleTodolistClick={handleTodolistClick} // 핸들러 추가
+        handleIconClick={handleIconClick}
       />
       <div className="content flex flex-col gap-10 mt-20 mx-auto max-w-screen-lg p-4">
         {currentView === "calendar" && (

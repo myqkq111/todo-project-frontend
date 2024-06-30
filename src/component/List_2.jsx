@@ -118,8 +118,6 @@ function List2({ todo, onBack, handleSelectTodo }) {
   }
 
   function isImportant(userId, isImportant) {
-    console.log(userId);
-    console.log(isImportant);
     axios
       .put("http://localhost:3000/api/filter/isImportant", {
         userId: userId,
@@ -132,33 +130,39 @@ function List2({ todo, onBack, handleSelectTodo }) {
         console.error("Error occurred on fetching", error);
       });
   }
+
   const update = () => {
     const title = titleRef.current.innerText;
     const recurringEvent = recurringEventRef.current.checked;
-    let regDate;
-    let recurringPeriod;
-    let dueDate;
     const textMemo = memoRef.current.value;
-    let updateDate = {
-      userId : todo.userId,
-      title : title,
-      recurringEvent : recurringEvent,
-      memo : textMemo
+    let regDate, recurringPeriod, dueDate;
+
+    const updateDate = {
+        userId: todo.userId,
+        title: title,
+        recurringEvent: recurringEvent,
+        memo: textMemo
     };
-    if(recurringEvent){
-      regDate = regDateRef.current.value;
-      recurringPeriod = recurringPeriodRef.current.value;
-      dueDate = dueDateRef.current.innerText;
-      if(regDate.trim() === ''){
-        alert('시작 날짜를 입력해주세요');
-        return;
-      }
-      if(recurringPeriod.trim() === ''){
-        alert('반복 기간을 입력해주세요');
-        return;
-      }
-      updateDate = {...updateDate,regDate : regDate, recurringPeriod : recurringPeriod, dueDate : dueDate};
+
+    if (recurringEvent) {
+        regDate = regDateRef.current.value;
+        recurringPeriod = recurringPeriodRef.current.value;
+        dueDate = calculateNextDate(regDate, recurringPeriod);  // dueDate를 여기서 계산
+
+        if (regDate.trim() === '') {
+            alert('시작 날짜를 입력해주세요');
+            return;
+        }
+        if (recurringPeriod.trim() === '') {
+            alert('반복 기간을 입력해주세요');
+            return;
+        }
+        
+        updateDate.regDate = regDate;
+        updateDate.recurringPeriod = recurringPeriod;
+        updateDate.dueDate = dueDate;
     }
+
     axios
       .put(`http://localhost:3000/api/todos/update`, updateDate)
       .then((res) => {
@@ -168,8 +172,46 @@ function List2({ todo, onBack, handleSelectTodo }) {
       .catch((error) => {
         console.error("Error occurred on fetching", error);
       });
+}
 
-  }
+  // const update = () => {
+  //   const title = titleRef.current.innerText;
+  //   const recurringEvent = recurringEventRef.current.checked;
+  //   let regDate;
+  //   let recurringPeriod;
+  //   let dueDate;
+  //   const textMemo = memoRef.current.value;
+  //   let updateDate = {
+  //     userId : todo.userId,
+  //     title : title,
+  //     recurringEvent : recurringEvent,
+  //     memo : textMemo
+  //   };
+  //   if(recurringEvent){
+  //     regDate = regDateRef.current.value;
+  //     recurringPeriod = recurringPeriodRef.current.value;
+  //     dueDate = dueDateRef.current.innerText;
+  //     if(regDate.trim() === ''){
+  //       alert('시작 날짜를 입력해주세요');
+  //       return;
+  //     }
+  //     if(recurringPeriod.trim() === ''){
+  //       alert('반복 기간을 입력해주세요');
+  //       return;
+  //     }
+  //     updateDate = {...updateDate,regDate : regDate, recurringPeriod : recurringPeriod, dueDate : dueDate};
+  //   }
+  //   axios
+  //     .put(`http://localhost:3000/api/todos/update`, updateDate)
+  //     .then((res) => {
+  //       console.log(res);
+  //       // handleSelectTodo(res.data);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error occurred on fetching", error);
+  //     });
+
+  // }
 
   return (
     <div className="relative p-5 pt-5 bg-dark text-black rounded-lg">
