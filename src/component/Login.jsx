@@ -82,10 +82,7 @@ function Login() {
           </p>
           <p className="text-sm text-gray-600">
             비밀번호를 잊으셨나요?{" "}
-            <Link
-              to="/reset-password"
-              className="text-blue-500 hover:underline"
-            >
+            <Link to="/reset-password" className="text-blue-500 hover:underline">
               비밀번호 재설정
             </Link>
           </p>
@@ -96,4 +93,5 @@ function Login() {
 }
 
 export default Login;
+
 
