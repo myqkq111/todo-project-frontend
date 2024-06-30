@@ -12,10 +12,10 @@ function List2({ todo, onBack, handleSelectTodo }) {
   const [newTitle, setNewTitle] = useState(todo.title);
   const [newDate, setNewDate] = useState(todo.dueDate);
   const [calenDate, setCalenDate] = useState(new Date()); // calenDate의 초기 값 설정
-  const [isRecurring, setIsRecurring] = useState(false);
-  const [recurringDate, setRecurringDate] = useState(todo.dueDate);
-  const [recurringPeriod, setRecurringPeriod] = useState("");
-  const [memo, setMemo] = useState("");
+  const [isRecurring, setIsRecurring] = useState(todo.recurringEvent);
+  const [recurringDate, setRecurringDate] = useState(todo.regDate);
+  const [recurringPeriod, setRecurringPeriod] = useState(todo.recurringPeriod);
+  const [memo, setMemo] = useState(todo.memo);
   const [isFavorite, setIsFavorite] = useState(todo.isImportant);
   const [isCompleted, setIsCompleted] = useState(todo.completed);
   const [dateDifference, setDateDifference] = useState("");
@@ -31,12 +31,12 @@ function List2({ todo, onBack, handleSelectTodo }) {
   // 초기에 todo의 날짜를 설정
   useEffect(() => {
     setNewDate(todo.dueDate);
-    setCalenDate(new Date(todo.dueDate));
-    setRecurringDate(todo.dueDate);
+    setCalenDate(new Date());
+    setRecurringDate(todo.regDate);
 
-    // 초기 dateDifference 계산
+    // // 초기 dateDifference 계산
     const differenceInDays = Math.ceil(
-      (new Date(todo.dueDate) - new Date()) / (1000 * 60 * 60 * 24)
+      (new Date() - new Date(todo.dueDate)) / (1000 * 60 * 60 * 24)
     );
     setDateDifference(differenceInDays);
   }, [todo]);
@@ -48,14 +48,21 @@ function List2({ todo, onBack, handleSelectTodo }) {
 
     // newDate와 선택된 날짜 사이의 차이 계산
     const differenceInDays = Math.ceil(
-      (selectedDate - new Date()) / (1000 * 60 * 60 * 24)
+      ( selectedDate - new Date(todo.dueDate)) / (1000 * 60 * 60 * 24)
     );
     setDateDifference(differenceInDays);
   };
 
   const handleDelete = () => {
-    alert("삭제되었습니다.");
-    onBack();
+    axios
+      .delete(`http://localhost:3000/api/todos/delete/${todo._id}`)
+      .then((res) => {
+        alert("삭제되었습니다.");
+        onBack();
+      })
+      .catch((error) => {
+        console.error("Error occurred on fetching", error);
+      });
   };
 
   const handleEditTitle = () => {
@@ -90,7 +97,7 @@ function List2({ todo, onBack, handleSelectTodo }) {
   };
 
   const calculateNextDate = (startDate, period) => {
-    if (!period) return "";
+    if (period == 0) return "";
     let nextDate = new Date(startDate);
     nextDate.setDate(nextDate.getDate() + parseInt(period, 10));
     return nextDate.toISOString().split("T")[0];
@@ -142,8 +149,6 @@ function List2({ todo, onBack, handleSelectTodo }) {
       regDate = regDateRef.current.value;
       recurringPeriod = recurringPeriodRef.current.value;
       dueDate = dueDateRef.current.innerText;
-      console.log(regDate);
-      console.log(dueDate);
       if(regDate.trim() === ''){
         alert('시작 날짜를 입력해주세요');
         return;
@@ -241,16 +246,26 @@ function List2({ todo, onBack, handleSelectTodo }) {
           <div className="space-y-4">
             <div className="mb-2">
               <span>날짜 : </span>
+              {todo.recurringEvent ? 
+              <input
+                ref={regDateRef}
+                type="date" 
+                value={recurringDate.split("T")[0]}
+                onChange={handleRecurringDateChange}
+                className="border border-gray-300 rounded"
+              /> 
+              : 
               <input
                 ref={regDateRef}
                 type="date"
-                value={recurringDate}
                 onChange={handleRecurringDateChange}
                 className="border border-gray-300 rounded"
-              />
+              /> 
+              }
             </div>
             <div>
               <span>반복 기간 : </span>
+              {todo.recurringEvent ?
               <input
                 ref={recurringPeriodRef}
                 type="number"
@@ -258,6 +273,14 @@ function List2({ todo, onBack, handleSelectTodo }) {
                 onChange={handleRecurringPeriodChange}
                 className="border border-gray-300 rounded"
               />
+              :
+              <input
+                ref={recurringPeriodRef}
+                type="number"
+                onChange={handleRecurringPeriodChange}
+                className="border border-gray-300 rounded"
+              />
+              }
             </div>
             <div className="mt-2">
               <span>예정일 :</span>
@@ -279,24 +302,18 @@ function List2({ todo, onBack, handleSelectTodo }) {
           className="w-full p-2 text-sm border border-gray-300 rounded"
         />
       </div>
-      <div className="flex justify-between mt-5">
+      <div className="flex justify-end mt-5">
+      <button
+          onClick={update}
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mr-2"
+        >
+          업데이트
+        </button>
         <button
           onClick={handleDelete}
-          className="bg-gray-800 text-white border-none py-2 px-4 rounded cursor-pointer text-lg hover:bg-gray-900"
+          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
         >
           삭제
-        </button>
-        <button
-          onClick={update}
-          className="bg-gray-800 text-white border-none py-2 px-4 rounded cursor-pointer text-lg hover:bg-gray-900"
-        >
-          수정
-        </button>
-        <button
-          onClick={onBack}
-          className="bg-gray-800 text-white border-none py-2 px-4 rounded cursor-pointer text-lg hover:bg-gray-900"
-        >
-          닫기
         </button>
       </div>
     </div>
