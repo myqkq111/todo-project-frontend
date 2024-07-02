@@ -17,10 +17,12 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:3000/login", {
-        username,
-        password,
-      });
+      const response = await axios.post(
+        "http://localhost:3000/login",
+        { username, password },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
       const { token } = response.data;
       localStorage.setItem("token", token);
       setIsLoggedIn(true);
@@ -37,7 +39,7 @@ function Login() {
         <h2 className="text-2xl font-bold text-center text-gray-800">로그인</h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="relative flex items-center">
-            <AiOutlineUser className="absolute w-6 h-6 text-gray-400 left-3" />
+            <AiOutlineUser className="absolute w-6 h-6 text-black left-3" />
             <input
               type="text"
               placeholder="아이디"
@@ -45,10 +47,11 @@ function Login() {
               onChange={(e) => setUsername(e.target.value)}
               required
               className="w-full pl-10 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              style={{ color: "black" }}
             />
           </div>
           <div className="relative flex items-center">
-            <AiOutlineLock className="absolute w-6 h-6 text-gray-400 left-3" />
+            <AiOutlineLock className="absolute w-6 h-6 text-black left-3" />
             <input
               type="password"
               placeholder="비밀번호"
@@ -56,6 +59,7 @@ function Login() {
               onChange={(e) => setPassword(e.target.value)}
               required
               className="w-full pl-10 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              style={{ color: "black" }}
             />
           </div>
           <button
@@ -82,7 +86,10 @@ function Login() {
           </p>
           <p className="text-sm text-gray-600">
             비밀번호를 잊으셨나요?{" "}
-            <Link to="/reset-password" className="text-blue-500 hover:underline">
+            <Link
+              to="/reset-password"
+              className="text-blue-500 hover:underline"
+            >
               비밀번호 재설정
             </Link>
           </p>
@@ -93,6 +100,3 @@ function Login() {
 }
 
 export default Login;
-
-
-

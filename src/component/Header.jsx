@@ -1,6 +1,5 @@
 import React, { useRef } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
 
 function Header({
   dropdownValue,
@@ -9,29 +8,12 @@ function Header({
   handleSearchCategoryChange,
   isLoggedIn,
   handleLogout,
-  setTodos, // setTodos 함수 추가
   handleDelete, // 추가: 회원 탈퇴 기능 핸들러
   handleTodolistClick,
   handleIconClick,
 }) {
   const selectRef = useRef(null);
   const inputRef = useRef(null);
-
-  const handleCategoryChange = (event) => {
-    // Dropdown의 선택된 값을 전달
-    handleDropdownChange(event);
-
-    // 선택된 카테고리에 해당하는 할일 목록을 다시 불러오는 로직 추가
-    axios
-      .get(`http://localhost:3000/api/todos/category/${event.target.value}`)
-      .then((res) => {
-        // 받아온 데이터 처리
-        setTodos(res.data); // 할일 목록을 App 컴포넌트에서 관리하는 state로 업데이트
-      })
-      .catch((error) => {
-        console.error("할일 목록 불러오기 오류:", error);
-      });
-  };
 
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
@@ -42,7 +24,6 @@ function Header({
       handleIconClick(selectRef.current.value, inputRef.current.value);
     }
   };
-
   return (
     <header className="App-header bg-dark text-dark w-full py-4 fixed top-0 left-0 z-50 shadow-md">
       <div className="max-w-screen-lg mx-auto flex justify-between items-center px-4">
@@ -55,7 +36,7 @@ function Header({
           </h1>
           <select
             value={dropdownValue}
-            onChange={handleCategoryChange}
+            onChange={handleDropdownChange}
             className="px-3 py-2 border border-gray-400 rounded-md text-sm bg-white text-black h-10"
           >
             <option value="전체">전체</option>
