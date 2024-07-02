@@ -152,18 +152,17 @@ function App() {
   };
 
   const handleDateClick = (date) => {
-    const clickedDate = new Date(date); // 이벤트에서 날짜 값을 가져와 Date 객체로 변환
+    const clickedDate = new Date(date);
     const viewDate = new Date(date);
     clickedDate.setDate(clickedDate.getDate() + 1);
-    // 원하는 날짜 포맷으로 변환
-    const formattedDate = clickedDate.toISOString().split("T")[0]; // "yyyy-MM-dd" 형식으로 변환
-    const viewFormattedDate = viewDate.toISOString().split("T")[0]; // "yyyy-MM-dd" 형식으로 변환
+    const formattedDate = clickedDate.toISOString().split("T")[0];
+    const viewFormattedDate = viewDate.toISOString().split("T")[0];
     setSelectedDate(viewFormattedDate);
     setCurrentView("list1");
     axios
       .get(`http://localhost:3000/api/todos?dueDate=${formattedDate}`)
       .then((res) => {
-        setList1Value(res.data);
+        setTodos(res.data);
       })
       .catch((error) => {
         console.error("Error occurred on fetching", error);
@@ -205,6 +204,7 @@ function App() {
         handleDropdownChange={handleDropdownChange}
         handleSearchCategoryChange={handleSearchCategoryChange}
         isLoggedIn={isLoggedIn}
+        setTodos={setTodos} // setTodos 함수를 Header 컴포넌트에 전달
         handleLogout={handleLogout}
         handleTodolistClick={handleTodolistClick} // 핸들러 추가
         handleIconClick={handleIconClick}
@@ -222,9 +222,9 @@ function App() {
               date={selectedDate}
               onSelectTodo={handleSelectTodo}
               onBack={handleBackToCalendar}
-              todos={list1Value} // todos 상태를 List1 컴포넌트로 전달합니다.
-              setTodos={setTodos} // setTodos 함수도 List1 컴포넌트로 전달합니다.
-              list1Value={list1Value}
+              todos={todos}
+              setTodos={setTodos}
+              dropdownValue={dropdownValue} // dropdownValue를 List1 컴포넌트에 전달
             />
           </div>
         )}
