@@ -42,7 +42,7 @@ function App() {
 
     // API 호출로 초기 데이터 가져오기
     axios
-      .get("http://localhost:3001/api/todos/list")
+      .get("http://localhost:3000/api/todos/list")
       .then((res) => {
         setTodos(res.data); // 서버에서 받아온 할일 목록을 설정합니다.
       })
@@ -126,7 +126,9 @@ function App() {
         break;
       case "일상 검색":
         axios
-          .get(`http://localhost:3000/api/filter?category=dailyLife&typing=${typing}`)
+          .get(
+            `http://localhost:3000/api/filter?category=dailyLife&typing=${typing}`
+          )
           .then((res) => {
             setList1Value(res.data);
           })
@@ -136,7 +138,9 @@ function App() {
         break;
       case "직장 검색":
         axios
-          .get(`http://localhost:3000/api/filter?category=workPlace&typing=${typing}`)
+          .get(
+            `http://localhost:3000/api/filter?category=workPlace&typing=${typing}`
+          )
           .then((res) => {
             setList1Value(res.data);
           })
@@ -148,18 +152,17 @@ function App() {
   };
 
   const handleDateClick = (date) => {
-    const clickedDate = new Date(date); // 이벤트에서 날짜 값을 가져와 Date 객체로 변환
+    const clickedDate = new Date(date);
     const viewDate = new Date(date);
     clickedDate.setDate(clickedDate.getDate() + 1);
-    // 원하는 날짜 포맷으로 변환
-    const formattedDate = clickedDate.toISOString().split("T")[0]; // "yyyy-MM-dd" 형식으로 변환
-    const viewFormattedDate = viewDate.toISOString().split("T")[0]; // "yyyy-MM-dd" 형식으로 변환
+    const formattedDate = clickedDate.toISOString().split("T")[0];
+    const viewFormattedDate = viewDate.toISOString().split("T")[0];
     setSelectedDate(viewFormattedDate);
     setCurrentView("list1");
     axios
-      .get(`http://localhost:3001/api/todos?dueDate=${formattedDate}`)
+      .get(`http://localhost:3000/api/todos?dueDate=${formattedDate}`)
       .then((res) => {
-        setList1Value(res.data);
+        setTodos(res.data);
       })
       .catch((error) => {
         console.error("Error occurred on fetching", error);
@@ -201,6 +204,7 @@ function App() {
         handleDropdownChange={handleDropdownChange}
         handleSearchCategoryChange={handleSearchCategoryChange}
         isLoggedIn={isLoggedIn}
+        setTodos={setTodos} // setTodos 함수를 Header 컴포넌트에 전달
         handleLogout={handleLogout}
         handleTodolistClick={handleTodolistClick} // 핸들러 추가
         handleIconClick={handleIconClick}
@@ -218,15 +222,19 @@ function App() {
               date={selectedDate}
               onSelectTodo={handleSelectTodo}
               onBack={handleBackToCalendar}
-              todos={list1Value} // todos 상태를 List1 컴포넌트로 전달합니다.
-              setTodos={setTodos} // setTodos 함수도 List1 컴포넌트로 전달합니다.
-              list1Value={list1Value}
+              todos={todos}
+              setTodos={setTodos}
+              dropdownValue={dropdownValue} // dropdownValue를 List1 컴포넌트에 전달
             />
           </div>
         )}
         {currentView === "list2" && selectedTodo && (
           <div className="modal fixed top-1/2 left-1/2 w-10/12 max-w-lg transform -translate-x-1/2 -translate-y-1/2 bg-dark text-dark p-6 rounded-lg shadow-lg z-50">
-            <List2 todo={selectedTodo} onBack={handleBackToList1} handleSelectTodo={handleSelectTodo}/>
+            <List2
+              todo={selectedTodo}
+              onBack={handleBackToList1}
+              handleSelectTodo={handleSelectTodo}
+            />
           </div>
         )}
         {currentView === "iconList" && (
@@ -256,5 +264,3 @@ function App() {
 }
 
 export default App;
-
-
