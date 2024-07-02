@@ -1,10 +1,10 @@
 // 내가 새로만든 컴포넌트
 
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import UpdateProfileForm from "./UpdateProfileForm";
 import { useNavigate } from "react-router-dom";
+import Header from "./Header";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -27,44 +27,49 @@ const Profile = () => {
         setUser(response.data);
       } catch (error) {
         console.error("Error fetching user info:", error);
-        // 에러 처리 예: 로그인 페이지로 리다이렉트 또는 에러 메시지 표시
+        if (error.response && error.response.status === 401) {
+          handleLogout();
+        }
       }
     };
 
     fetchUserInfo();
   }, []);
 
-  const handleUpdateSuccess = async (newUsername, newEmail, newPassword) => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("User not authenticated");
-      }
-
-      await axios.post(
-        "http://localhost:3000/logout",
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      alert("프로필이 수정되었습니다!"); // 수정 완료 알림창
-
-      // 로그아웃 후 로그인 페이지로 이동
-      navigate("/login");
-    } catch (error) {
-      console.error("Error logging out:", error);
-      alert("로그아웃 중 오류가 발생했습니다.");
-    }
+  const handleUpdateSuccess = (newUsername, newEmail, newPassword) => {
+    alert("프로필이 수정되었습니다!"); // 수정 완료 알림창
+    handleLogout(); // 로그아웃 후 로그인 페이지로 이동
   };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     setUser(null); // 사용자 정보 초기화
     navigate("/login"); // 로그인 페이지로 이동
+  };
+
+  const handleDelete = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("User not authenticated");
+      }
+
+      const response = await axios.delete("http://localhost:3000/delete", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      alert(response.data.message); // 회원 탈퇴 성공 알림창
+
+      localStorage.removeItem("token");
+      setUser(null); // 사용자 정보 초기화
+      navigate("/login"); // 로그인 페이지로 이동
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      alert("회원 탈퇴 중 오류가 발생했습니다.");
+    }
   };
 
   return (

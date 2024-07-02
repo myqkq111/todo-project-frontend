@@ -1,5 +1,6 @@
-import React, {useRef} from "react";
+import React, { useRef } from "react";
 import { Link } from "react-router-dom";
+import Profile from "./Profile";
 
 function Header({
   dropdownValue,
@@ -10,20 +11,20 @@ function Header({
   handleLogout,
   handleDelete, // 추가: 회원 탈퇴 기능 핸들러
   handleTodolistClick,
-  handleIconClick
+  handleIconClick,
 }) {
   const selectRef = useRef(null);
   const inputRef = useRef(null);
 
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
-      if(inputRef.current.value.trim() === ''){
-        alert('검색어를 입력해주세요.');
+      if (inputRef.current.value.trim() === "") {
+        alert("검색어를 입력해주세요.");
         return;
       }
       handleIconClick(selectRef.current.value, inputRef.current.value);
     }
-  }
+  };
   return (
     <header className="App-header bg-dark text-dark w-full py-4 fixed top-0 left-0 z-50 shadow-md">
       <div className="max-w-screen-lg mx-auto flex justify-between items-center px-4">
@@ -89,7 +90,7 @@ function Header({
                 type="text"
                 placeholder="검색"
                 className="pl-32 pr-3 py-2 border border-gray-400 rounded-r-md text-sm bg-white text-black h-10 text-right text-xs"
-                onKeyDown={(event)=> handleKeyPress(event)}
+                onKeyDown={(event) => handleKeyPress(event)}
               />
             </div>
           </div>
