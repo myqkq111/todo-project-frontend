@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import React, { useState, useEffect } from "react";
 import "react-calendar/dist/Calendar.css";
 import List1 from "./component/List_1";
@@ -7,8 +8,9 @@ import "./App.css";
 import Header from "./component/Header";
 import Middle from "./component/Middle";
 import Calen from "./component/Calen";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Routes, Route } from "react-router-dom";
 import axios from "axios";
+import Profile from "./component/Profile";
 
 function App() {
   const [value, setValue] = useState(new Date());
@@ -19,8 +21,17 @@ function App() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [todos, setTodos] = useState([]);
-
+  const [list1Value, setList1Value] = useState([]);
+  const [list1Name, setList1Name] = useState([]);
   const navigate = useNavigate();
+  const catRef = useRef(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
 
   useEffect(() => {
     setDropdownValue("전체");
@@ -40,6 +51,16 @@ function App() {
       });
   }, [isLoggedIn]);
 
+  const handleTodolistClick = () => {
+    const cat = catRef.current;
+    cat.style.display = "block";
+    cat.style.animation = "moveCat 5s linear";
+    setTimeout(() => {
+      cat.style.display = "none";
+      cat.style.animation = "none";
+    }, 5000);
+  };
+
   const handleDropdownChange = (event) => {
     setDropdownValue(event.target.value);
   };
@@ -48,10 +69,86 @@ function App() {
     setSearchCategory(event.target.value);
   };
 
-  const handleIconClick = (event) => {
+  const handleIconClick = (event, typing) => {
     setSelectedDate(new Date());
     setCurrentView("iconList");
-    // handleIconClick의 로직 추가
+    setList1Name(event);
+    switch (event) {
+      case "미완료":
+        axios
+          .get("http://localhost:3000/api/filter/failedSchedule")
+          .then((res) => {
+            setList1Value(res.data);
+          })
+          .catch((error) => {
+            console.error("Error occurred on fetching", error);
+          });
+        break;
+      case "주기적인 일":
+        axios
+          .get("http://localhost:3000/api/filter/recurringEvent")
+          .then((res) => {
+            setList1Value(res.data);
+          })
+          .catch((error) => {
+            console.error("Error occurred on fetching", error);
+          });
+        break;
+      case "중요한 일":
+        axios
+          .get("http://localhost:3000/api/filter/isImportant")
+          .then((res) => {
+            setList1Value(res.data);
+          })
+          .catch((error) => {
+            console.error("Error occurred on fetching", error);
+          });
+        break;
+      case "완료":
+        axios
+          .get("http://localhost:3000/api/filter/completed")
+          .then((res) => {
+            setList1Value(res.data);
+          })
+          .catch((error) => {
+            console.error("Error occurred on fetching", error);
+          });
+        break;
+      case "전체 검색":
+        axios
+          .get(`http://localhost:3000/api/filter?category=all&typing=${typing}`)
+          .then((res) => {
+            setList1Value(res.data);
+          })
+          .catch((error) => {
+            console.error("Error occurred on fetching", error);
+          });
+        break;
+      case "일상 검색":
+        axios
+          .get(
+            `http://localhost:3000/api/filter?category=dailyLife&typing=${typing}`
+          )
+          .then((res) => {
+            setList1Value(res.data);
+          })
+          .catch((error) => {
+            console.error("Error occurred on fetching", error);
+          });
+        break;
+      case "직장 검색":
+        axios
+          .get(
+            `http://localhost:3000/api/filter?category=workPlace&typing=${typing}`
+          )
+          .then((res) => {
+            setList1Value(res.data);
+          })
+          .catch((error) => {
+            console.error("Error occurred on fetching", error);
+          });
+        break;
+    }
   };
 
   const handleDateClick = (date) => {
@@ -79,7 +176,7 @@ function App() {
 
   const handleBackToList1 = () => {
     setSelectedTodo(null);
-    setCurrentView("list1");
+    setCurrentView("iconList");
   };
 
   const handleBackToCalendar = () => {
@@ -88,9 +185,15 @@ function App() {
     setCurrentView("calendar");
   };
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      await axios.post("http://localhost:3000/logout");
+      localStorage.removeItem("token");
+      setIsLoggedIn(false);
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
   };
 
   return (
@@ -100,15 +203,17 @@ function App() {
         searchCategory={searchCategory}
         handleDropdownChange={handleDropdownChange}
         handleSearchCategoryChange={handleSearchCategoryChange}
-        handleLogout={handleLogout}
         isLoggedIn={isLoggedIn}
         setTodos={setTodos} // setTodos 함수를 Header 컴포넌트에 전달
+        handleLogout={handleLogout}
+        handleTodolistClick={handleTodolistClick} // 핸들러 추가
+        handleIconClick={handleIconClick}
       />
       <div className="content flex flex-col gap-10 mt-20 mx-auto max-w-screen-lg p-4">
         {currentView === "calendar" && (
           <>
             <Middle handleIconClick={handleIconClick} />
-            <Calen handleDateClick={handleDateClick} />
+            <Calen handleDateClick={handleDateClick} todos={todos} />
           </>
         )}
         {currentView === "list1" && (
@@ -125,11 +230,19 @@ function App() {
         )}
         {currentView === "list2" && selectedTodo && (
           <div className="modal fixed top-1/2 left-1/2 w-10/12 max-w-lg transform -translate-x-1/2 -translate-y-1/2 bg-dark text-dark p-6 rounded-lg shadow-lg z-50">
-            <List2 todo={selectedTodo} onBack={handleBackToList1} />
+            <List2
+              todo={selectedTodo}
+              onBack={handleBackToList1}
+              handleSelectTodo={handleSelectTodo}
+            />
           </div>
         )}
         {currentView === "iconList" && (
-          <IconList todos={todos} onSelectTodo={handleSelectTodo} />
+          <IconList
+            todos={list1Value}
+            onSelectTodo={handleSelectTodo}
+            list1Name={list1Name}
+          />
         )}
       </div>
       {(currentView === "list1" ||
@@ -140,6 +253,12 @@ function App() {
           onClick={handleBackToCalendar}
         ></div>
       )}
+      <img ref={catRef} src="/cat.PNG" className="cat" alt="cat" />
+
+      {/* 프로필 페이지 라우트 설정 */}
+      <Routes>
+        <Route path="/profile" element={<Profile />} />
+      </Routes>
     </div>
   );
 }

@@ -1,16 +1,34 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { AiOutlineUser, AiOutlineLock } from "react-icons/ai";
+import axios from "axios";
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, []);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // 로그인 로직을 처리합니다.
-    navigate("/"); // 로그인 후 메인 페이지로 이동
+    try {
+      const response = await axios.post("http://localhost:3000/login", {
+        username,
+        password,
+      });
+      const { token } = response.data;
+      localStorage.setItem("token", token);
+      setIsLoggedIn(true);
+      navigate("/");
+    } catch (error) {
+      console.error("Login failed", error);
+      alert("아이디나 비밀번호를 다시 확인해주세요");
+    }
   };
 
   return (
@@ -47,20 +65,26 @@ function Login() {
             로그인
           </button>
         </form>
-        <div className="flex justify-between text-sm text-gray-600 mt-4">
-          <a href="/find-id" className="hover:underline">
-            아이디 찾기
-          </a>
-          <a href="/find-password" className="hover:underline">
-            비밀번호 찾기
-          </a>
-        </div>
         <div className="text-center mt-4">
           <p className="text-sm text-gray-600">
             계정이 없으신가요?{" "}
-            <a href="/register" className="text-blue-500 hover:underline">
+            <Link to="/register" className="text-blue-500 hover:underline">
               회원가입
-            </a>
+            </Link>
+          </p>
+        </div>
+        <div className="text-center mt-2">
+          <p className="text-sm text-gray-600">
+            아이디를 잊으셨나요?{" "}
+            <Link to="/find-id" className="text-blue-500 hover:underline">
+              아이디 찾기
+            </Link>
+          </p>
+          <p className="text-sm text-gray-600">
+            비밀번호를 잊으셨나요?{" "}
+            <Link to="/reset-password" className="text-blue-500 hover:underline">
+              비밀번호 재설정
+            </Link>
           </p>
         </div>
       </div>
@@ -69,3 +93,6 @@ function Login() {
 }
 
 export default Login;
+
+
+

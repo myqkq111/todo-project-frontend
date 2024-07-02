@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AiOutlineUser, AiOutlineLock } from "react-icons/ai";
+import axios from "axios";
 
 function Register() {
   const [username, setUsername] = useState("");
   const [isUsernameAvailable, setIsUsernameAvailable] = useState(null);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [email, setEmail] = useState("");
   const navigate = useNavigate();
 
   const handleUsernameChange = (e) => {
@@ -14,26 +16,42 @@ function Register() {
     setIsUsernameAvailable(null); // Reset availability check when username changes
   };
 
-  const checkUsernameAvailability = () => {
-    // 여기서 아이디 중복체크 로직을 추가하세요.
-    // 예를 들어, API를 호출하여 아이디가 사용 가능한지 확인합니다.
-    // 임시로, 사용 가능 여부를 랜덤하게 설정합니다.
-    setIsUsernameAvailable(Math.random() > 0.5);
+  const checkUsernameAvailability = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3000/check-username/${username}`);
+      setIsUsernameAvailable(response.data.available);
+    } catch (error) {
+      console.error("Username check failed", error);
+      alert("아이디 중복체크에 실패했습니다. 다시 시도해주세요.");
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // 회원가입 로직을 처리합니다.
-    // 회원가입 성공 시 navigate('/login'); 호출하여 로그인 페이지로 이동합니다.
-    navigate("/login");
+    if (password !== confirmPassword) {
+      alert("비밀번호가 일치하지 않습니다.");
+      return;
+    }
+    try {
+      const response = await axios.post("http://localhost:3000/register", {
+        username,
+        password,
+        email,
+      });
+      if (response.status === 201) {
+        alert("회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.");
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error("Registration failed", error);
+      alert("회원가입에 실패했습니다. 다시 시도해주세요.");
+    }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded shadow-md">
-        <h2 className="text-2xl font-bold text-center text-gray-800">
-          회원가입
-        </h2>
+        <h2 className="text-2xl font-bold text-center text-gray-800">회원가입</h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="relative flex items-center">
             <AiOutlineUser className="absolute w-6 h-6 text-gray-400 left-3" />
@@ -64,7 +82,14 @@ function Register() {
                 : "이미 사용 중인 아이디입니다."}
             </div>
           )}
-
+          <input
+            type="email"
+            placeholder="이메일"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="w-full py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
           <div className="relative flex items-center">
             <AiOutlineLock className="absolute w-6 h-6 text-gray-400 left-3" />
             <input
@@ -108,3 +133,4 @@ function Register() {
 }
 
 export default Register;
+
