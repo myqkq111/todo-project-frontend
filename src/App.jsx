@@ -184,15 +184,65 @@ function App() {
     setSelectedDate(new Date());
     setCurrentView("calendar");
   };
-
   const handleLogout = async () => {
     try {
-      await axios.post("http://localhost:3000/logout");
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("User not authenticated");
+      }
+
+      // 서버로 로그아웃 요청을 보냄
+      await axios.post("http://localhost:3000/api/users/logout", null, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // 로컬 스토리지에서 토큰 제거
       localStorage.removeItem("token");
+
+      // 기타 클라이언트 측 로직 추가: 예를 들어 인증 상태 변경 등
       setIsLoggedIn(false);
-      navigate("/login");
+      navigate("/");
+      console.log("로그아웃 성공");
     } catch (error) {
-      console.error("Logout failed", error);
+      console.error("로그아웃 실패:", error);
+    }
+  };
+
+  const handleDelete = async () => {
+    console.log("Delete button clicked");
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("User not authenticated");
+      }
+
+      const response = await axios.delete(
+        "http://localhost:3000/api/users/delete",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("Response received:", response.data);
+      alert(response.data.message); // 회원 탈퇴 성공 알림창
+
+      localStorage.removeItem("token");
+      setIsLoggedIn(false); // 사용자 정보 초기화
+      navigate("/login"); // 로그인 페이지로 이동
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      if (error.response) {
+        console.error("Server error:", error.response.data);
+        alert("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+      } else {
+        console.error("Error:", error.message);
+        alert("오류가 발생했습니다. 다시 시도해주세요.");
+      }
     }
   };
 
@@ -206,6 +256,7 @@ function App() {
         isLoggedIn={isLoggedIn}
         setTodos={setTodos} // setTodos 함수를 Header 컴포넌트에 전달
         handleLogout={handleLogout}
+        handleDelete={handleDelete}
         handleTodolistClick={handleTodolistClick} // 핸들러 추가
         handleIconClick={handleIconClick}
       />

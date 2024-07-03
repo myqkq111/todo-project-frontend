@@ -7,6 +7,7 @@ import FindID from "./component/FindID";
 import Profile from "./component/Profile";
 import ResetPassword from "./component/ResetPassword";
 import FindPassword from "./component/FindPassword"; // 추가해야 할 부분
+import UpdateProfileForm from "./component/UpdateProfileForm";
 
 function AppRouter() {
   return (
@@ -16,9 +17,11 @@ function AppRouter() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/find-id" element={<FindID />} />
-        <Route path="/find-password" element={<FindPassword />} /> {/* 수정된 부분 */}
+        <Route path="/find-password" element={<FindPassword />} />{" "}
+        {/* 수정된 부분 */}
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/update" element={<Profile />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/update" element={<UpdateProfileForm />} />
       </Routes>
     </Router>
   );

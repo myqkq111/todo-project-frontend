@@ -11,6 +11,7 @@ function Header({
   handleDelete, // 추가: 회원 탈퇴 기능 핸들러
   handleTodolistClick,
   handleIconClick,
+  handleUpdateSuccess,
 }) {
   const selectRef = useRef(null);
   const inputRef = useRef(null);
@@ -24,6 +25,7 @@ function Header({
       handleIconClick(selectRef.current.value, inputRef.current.value);
     }
   };
+
   return (
     <header className="App-header bg-dark text-dark w-full py-4 fixed top-0 left-0 z-50 shadow-md">
       <div className="max-w-screen-lg mx-auto flex justify-between items-center px-4">
@@ -54,7 +56,10 @@ function Header({
                 로그아웃
               </button>
               <button
-                onClick={handleDelete}
+                onClick={() => {
+                  console.log("Delete button clicked");
+                  handleDelete();
+                }}
                 className="py-2 px-4 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:bg-red-600"
               >
                 회원 탈퇴
