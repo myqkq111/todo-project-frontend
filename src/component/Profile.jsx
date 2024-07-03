@@ -1,13 +1,12 @@
-// 내가 새로만든 컴포넌트
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import UpdateProfileForm from "./UpdateProfileForm";
 import { useNavigate } from "react-router-dom";
-import Header from "./Header";
+import Header from "./Header"; // Header 컴포넌트 import
 
 const Profile = () => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState();
+  const [isLoggedIn, setIsLoggedIn] = useState();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,18 +35,14 @@ const Profile = () => {
     fetchUserInfo();
   }, []);
 
-  const handleUpdateSuccess = (newUsername, newEmail, newPassword) => {
+  const handleUpdateSuccess = () => {
     alert("프로필이 수정되었습니다!"); // 수정 완료 알림창
-    handleLogout(); // 로그아웃 후 로그인 페이지로 이동
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setUser(null); // 사용자 정보 초기화
-    navigate("/login"); // 로그인 페이지로 이동
+    navigate("/login"); // 로그아웃 후 로그인 페이지로 이동
   };
 
   const handleDelete = async () => {
+    console.log("Delete button clicked");
+
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -61,10 +56,12 @@ const Profile = () => {
         },
       });
 
+      console.log("Response received:", response.data);
       alert(response.data.message); // 회원 탈퇴 성공 알림창
 
       localStorage.removeItem("token");
       setUser(null); // 사용자 정보 초기화
+      setIsLoggedIn(false);
       navigate("/login"); // 로그인 페이지로 이동
     } catch (error) {
       console.error("Error deleting account:", error);
@@ -73,18 +70,25 @@ const Profile = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md p-8 space-y-8 bg-white rounded shadow-md">
-        <h2 className="text-3xl font-bold text-center text-gray-800 mb-4">
-          사용자 프로필
-        </h2>
-        {user && (
-          <UpdateProfileForm
-            user={user}
-            onUpdateSuccess={handleUpdateSuccess}
-            onLogout={handleLogout}
-          />
-        )}
+    <div>
+      <Header
+        isLoggedIn={isLoggedIn}
+        handleLogout={handleLogout}
+        handleDelete={handleDelete}
+        // 필요한 다른 props도 전달
+      />
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="w-full max-w-md p-8 space-y-8 bg-white rounded shadow-md">
+          <h2 className="text-3xl font-bold text-center text-gray-800 mb-4">
+            사용자 프로필
+          </h2>
+          {user && (
+            <UpdateProfileForm
+              user={user}
+              onUpdateSuccess={handleUpdateSuccess}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

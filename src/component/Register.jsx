@@ -18,8 +18,10 @@ function Register() {
 
   const checkUsernameAvailability = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/check-username/${username}`);
-      setIsUsernameAvailable(response.data.available);
+      const response = await axios.get(
+        `http://localhost:3000/api/users/check-username/${username}`
+      );
+      setIsUsernameAvailable(!response.data.exists); // 서버에서 exists를 받도록 수정
     } catch (error) {
       console.error("Username check failed", error);
       alert("아이디 중복체크에 실패했습니다. 다시 시도해주세요.");
@@ -33,11 +35,14 @@ function Register() {
       return;
     }
     try {
-      const response = await axios.post("http://localhost:3000/register", {
-        username,
-        password,
-        email,
-      });
+      const response = await axios.post(
+        "http://localhost:3000/api/users/register",
+        {
+          username,
+          password,
+          email,
+        }
+      );
       if (response.status === 201) {
         alert("회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.");
         navigate("/login");
@@ -51,7 +56,9 @@ function Register() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded shadow-md">
-        <h2 className="text-2xl font-bold text-center text-gray-800">회원가입</h2>
+        <h2 className="text-2xl font-bold text-center text-gray-800">
+          회원가입
+        </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="relative flex items-center">
             <AiOutlineUser className="absolute w-6 h-6 text-gray-400 left-3" />
@@ -133,4 +140,3 @@ function Register() {
 }
 
 export default Register;
-
