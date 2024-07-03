@@ -1,10 +1,11 @@
-import React, { useState } from "react";
-import { AiOutlinePlus, AiOutlineSync, AiFillStar } from "react-icons/ai"; // 주기적인 일과 중요한 일 아이콘 추가
+import React, { useState, useEffect } from "react";
+import { AiOutlinePlus, AiOutlineSync, AiFillStar } from "react-icons/ai";
 import axios from "axios";
 
-function List1({ date, onSelectTodo, todos, setTodos }) {
+function List1({ date, onSelectTodo, todos, setTodos, dropdownValue }) {
   const [newTodo, setNewTodo] = useState("");
   const [showInput, setShowInput] = useState(false);
+  const [filteredTodos, setFilteredTodos] = useState([]);
 
   // 날짜 보정 함수
   const adjustDate = (date) => {
@@ -15,20 +16,33 @@ function List1({ date, onSelectTodo, todos, setTodos }) {
 
   const selectedDateString = adjustDate(date);
 
+  useEffect(() => {
+    // 필요 시 todos를 사용하여 필터링 로직 추가
+    filterTodos();
+  }, []); // todos 또는 dropdownValue가 변경될 때마다 재필터링
+
+  const filterTodos = () => {
+    let filtered = todos.filter((todo) => {
+      if (dropdownValue === "전체") {
+        return true; // 모든 카테고리를 보여줌
+      } else if (dropdownValue === "일상") {
+        return todo.categori === 1;
+      } else {
+        return todo.categori === 0;
+      }
+    });
+    //------------------------------------------------------------------------------------------------
+    setTodos(filtered);
+  };
+
   const addTodo = () => {
     if (newTodo.trim() !== "") {
       const newTodoItem = {
-        id: todos.length + 1,
-        event: newTodo,
-        date: selectedDateString,
-        status: "미완료", // 기본 상태를 미완료로 설정
-        recurring: false, // 기본 값으로 설정
-        important: false, // 기본 값으로 설정
         title: newTodo,
-        contents: "", // 필요에 따라 추가 필드를 더 넣습니다.
-        categori: "일상", // 예시: categori는 애플리케이션 로직에 따라 동적으로 할당하거나 하드코딩할 수 있습니다.
+        contents: "",
+        categori: "일상",
         dueDate: selectedDateString,
-        userId: "667b7be3e4220d59f2d58835", // 예시: 실제 인증에서 얻은 사용자 ID로 교체합니다.
+        userId: "667b7be3e4220d59f2d58835",
       };
       axios
         .post("http://localhost:3000/api/todos/new", newTodoItem)
@@ -75,6 +89,16 @@ function List1({ date, onSelectTodo, todos, setTodos }) {
         </div>
       )}
       <ul className="flex flex-col items-center">
+        {/* {filteredTodos.map((todo, index) => (
+           <li
+             key={index}
+             className="flex justify-center w-full mb-2 p-2 border-b border-gray-300 cursor-pointer"
+             onClick={() => onSelectTodo(todo)}
+             style={{ color: "black", fontWeight: "bold" }}
+           >
+             <span>{todo.title}</span>
+           </li>
+         ))} */}
         {todos
           // .filter((todo) => todo.date === selectedDateString)
           .map((todo, index) => (
