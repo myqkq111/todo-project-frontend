@@ -11,7 +11,7 @@ function List2({ todo, onBack, handleSelectTodo }) {
   const [isEditing, setIsEditing] = useState(false);
   const [newTitle, setNewTitle] = useState(todo.title);
   const [newDate, setNewDate] = useState(todo.dueDate);
-  const [calenDate, setCalenDate] = useState(new Date()); // calenDate의 초기 값 설정
+  const [calenDate, setCalenDate] = useState(todo.dueDate); // calenDate의 초기 값 설정
   const [isRecurring, setIsRecurring] = useState(todo.recurringEvent);
   const [recurringDate, setRecurringDate] = useState(todo.regDate);
   const [recurringPeriod, setRecurringPeriod] = useState(todo.recurringPeriod);
@@ -19,6 +19,7 @@ function List2({ todo, onBack, handleSelectTodo }) {
   const [isFavorite, setIsFavorite] = useState(todo.isImportant);
   const [isCompleted, setIsCompleted] = useState(todo.completed);
   const [dateDifference, setDateDifference] = useState("");
+  const [dueDateChange, setDueDateChange] = useState(null);
 
   const titleRef = useRef(null);
   const recurringEventRef = useRef(null);
@@ -27,30 +28,40 @@ function List2({ todo, onBack, handleSelectTodo }) {
   const dueDateRef = useRef(null);
   const memoRef = useRef(null);
 
-
   // 초기에 todo의 날짜를 설정
   useEffect(() => {
     setNewDate(todo.dueDate);
-    setCalenDate(new Date());
+    setCalenDate(todo.dueDate);
     setRecurringDate(todo.regDate);
 
     // // 초기 dateDifference 계산
     const differenceInDays = Math.ceil(
-      (new Date() - new Date(todo.dueDate)) / (1000 * 60 * 60 * 24)
+      (new Date().setHours(0, 0, 0, 0) -
+        new Date(todo.dueDate).setHours(0, 0, 0, 0)) /
+        (1000 * 60 * 60 * 24)
     );
+
     setDateDifference(differenceInDays);
   }, [todo]);
 
   // 달력 선택 시 실행되는 함수
   const handleCalendarChange = (e) => {
     const selectedDate = new Date(e.target.value);
-    setCalenDate(selectedDate);
+    console.log(selectedDate);
+    setCalenDate(selectedDate.toISOString());
 
     // newDate와 선택된 날짜 사이의 차이 계산
+    // const differenceInDays = Math.ceil(
+    //   (selectedDate - new Date(todo.dueDate)) / (1000 * 60 * 60 * 24)
+    // );
+    // setDateDifference(differenceInDays);
     const differenceInDays = Math.ceil(
-      ( selectedDate - new Date(todo.dueDate)) / (1000 * 60 * 60 * 24)
+      (selectedDate - new Date()) / (1000 * 60 * 60 * 24)
     );
+
     setDateDifference(differenceInDays);
+
+    setDueDateChange(selectedDate.toISOString());
   };
 
   const handleDelete = () => {
@@ -138,41 +149,45 @@ function List2({ todo, onBack, handleSelectTodo }) {
     let regDate, recurringPeriod, dueDate;
 
     const updateDate = {
-        userId: todo.userId,
-        title: title,
-        recurringEvent: recurringEvent,
-        memo: textMemo
+      _id: todo._id,
+      userId: todo.userId,
+      title: title,
+      recurringEvent: recurringEvent,
+      memo: textMemo,
     };
 
     if (recurringEvent) {
-        regDate = regDateRef.current.value;
-        recurringPeriod = recurringPeriodRef.current.value;
-        dueDate = calculateNextDate(regDate, recurringPeriod);  // dueDate를 여기서 계산
+      regDate = regDateRef.current.value;
+      recurringPeriod = recurringPeriodRef.current.value;
+      dueDate = calculateNextDate(regDate, recurringPeriod); // dueDate를 여기서 계산
 
-        if (regDate.trim() === '') {
-            alert('시작 날짜를 입력해주세요');
-            return;
-        }
-        if (recurringPeriod.trim() === '') {
-            alert('반복 기간을 입력해주세요');
-            return;
-        }
-        
-        updateDate.regDate = regDate;
-        updateDate.recurringPeriod = recurringPeriod;
-        updateDate.dueDate = dueDate;
+      if (regDate.trim() === "") {
+        alert("시작 날짜를 입력해주세요");
+        return;
+      }
+      if (recurringPeriod.trim() === "") {
+        alert("반복 기간을 입력해주세요");
+        return;
+      }
+
+      updateDate.regDate = regDate;
+      updateDate.recurringPeriod = recurringPeriod;
+      updateDate.dueDate = dueDate;
+    } else {
+      if (dueDateChange !== null) {
+        updateDate.dueDate = dueDateChange;
+      }
     }
 
     axios
       .put(`http://localhost:3000/api/todos/update`, updateDate)
       .then((res) => {
-        console.log(res);
-        // handleSelectTodo(res.data);
+        handleSelectTodo(res.data);
       })
       .catch((error) => {
         console.error("Error occurred on fetching", error);
       });
-}
+  };
 
   // const update = () => {
   //   const title = titleRef.current.innerText;
@@ -216,18 +231,22 @@ function List2({ todo, onBack, handleSelectTodo }) {
   return (
     <div className="relative p-5 pt-5 bg-dark text-black rounded-lg">
       <div className="flex justify-between items-center mb-7">
-        <button
-          onClick={(event) => {
-            isImportant(todo.userId, todo.isImportant);
-          }}
-          className="bg-transparent border-none text-2xl cursor-pointer"
-        >
-          {isFavorite ? (
-            <AiFillStar className="text-yellow-500" />
-          ) : (
-            <AiOutlineStar />
-          )}
-        </button>
+        {todo.failedSchedule ? (
+          <span></span>
+        ) : (
+          <button
+            onClick={() => {
+              isImportant(todo.userId, todo.isImportant);
+            }}
+            className="bg-transparent border-none text-2xl cursor-pointer"
+          >
+            {isFavorite ? (
+              <AiFillStar className="text-yellow-500" />
+            ) : (
+              <AiOutlineStar />
+            )}
+          </button>
+        )}
         {isEditing ? (
           <input
             type="text"
@@ -239,38 +258,64 @@ function List2({ todo, onBack, handleSelectTodo }) {
             className="w-3/4 p-2 text-2xl mb-5 border border-gray-300 rounded"
           />
         ) : (
-          <div
-            ref={titleRef}
-            className="text-2xl mb-5 font-bold cursor-pointer"
-            onClick={handleEditTitle}
-          >
-            {newTitle}
+          <div>
+            <div
+              ref={titleRef}
+              className="text-2xl mb-2 font-bold cursor-pointer"
+              onClick={handleEditTitle}
+            >
+              {newTitle}
+            </div>
+            {todo.failedSchedule ? (
+              <div className="text-sm" style={{ color: "rgb(204, 0, 0)" }}>
+                <b>미완료 일정</b>
+              </div>
+            ) : (
+              <></>
+            )}
           </div>
         )}
-        <button
-          onClick={() => {
-            completed(todo.userId, todo.completed);
-          }}
-          className="bg-transparent border-none text-2xl cursor-pointer"
-        >
-          {isCompleted ? (
-            <AiFillCheckCircle className="text-green-500" />
-          ) : (
-            <AiOutlineCheckCircle />
-          )}
-        </button>
+        {todo.failedSchedule ? (
+          <span></span>
+        ) : (
+          <button
+            onClick={() => {
+              completed(todo.userId, todo.completed);
+            }}
+            className="bg-transparent border-none text-2xl cursor-pointer"
+          >
+            {isCompleted ? (
+              <AiFillCheckCircle className="text-green-500" />
+            ) : (
+              <AiOutlineCheckCircle />
+            )}
+          </button>
+        )}
       </div>
+      {/* {todo.failedSchedule ? (
+        <div className="flex justify-between items-center mb-7">
+          <span></span>
+          <div className="text-xl mb-5 font-bold text-red-600">미완료 일정</div>
+          <span></span>
+        </div>
+      ) : (
+        <></>
+      )} */}
       <div className="flex justify-between mb-5 text-2xl font-bold">
         <span>
           {dateDifference === 0
             ? "D-day"
-            : `D${dateDifference >= 0 ? `+${dateDifference}` : `${dateDifference}`}`}
+            : `D${
+                dateDifference >= 0 ? `+${dateDifference}` : `${dateDifference}`
+              }`}
         </span>
         <input
           type="date"
-          value={calenDate.toISOString().split("T")[0]} // 달력의 초기 값 설정
+          value={calenDate.split("T")[0]} // 달력의 초기 값 설정 여기가 문제
           onChange={handleCalendarChange} // 달력 값 변경 시 실행되는 함수
-          className="border border-gray-300 rounded"
+          className="border border-gray-300 rounded px-2 py-1 hover:border-blue-500"
+          title="마감일"
+          disabled={isRecurring}
         />
       </div>
       <div className="space-y-6">
@@ -288,41 +333,41 @@ function List2({ todo, onBack, handleSelectTodo }) {
           <div className="space-y-4">
             <div className="mb-2">
               <span>날짜 : </span>
-              {todo.recurringEvent ? 
-              <input
-                ref={regDateRef}
-                type="date" 
-                value={recurringDate.split("T")[0]}
-                onChange={handleRecurringDateChange}
-                className="border border-gray-300 rounded"
-              /> 
-              : 
-              <input
-                ref={regDateRef}
-                type="date"
-                onChange={handleRecurringDateChange}
-                className="border border-gray-300 rounded"
-              /> 
-              }
+              {todo.recurringEvent ? (
+                <input
+                  ref={regDateRef}
+                  type="date"
+                  value={recurringDate.split("T")[0]}
+                  onChange={handleRecurringDateChange}
+                  className="border border-gray-300 rounded"
+                />
+              ) : (
+                <input
+                  ref={regDateRef}
+                  type="date"
+                  onChange={handleRecurringDateChange}
+                  className="border border-gray-300 rounded"
+                />
+              )}
             </div>
             <div>
               <span>반복 기간 : </span>
-              {todo.recurringEvent ?
-              <input
-                ref={recurringPeriodRef}
-                type="number"
-                value={recurringPeriod}
-                onChange={handleRecurringPeriodChange}
-                className="border border-gray-300 rounded"
-              />
-              :
-              <input
-                ref={recurringPeriodRef}
-                type="number"
-                onChange={handleRecurringPeriodChange}
-                className="border border-gray-300 rounded"
-              />
-              }
+              {todo.recurringEvent ? (
+                <input
+                  ref={recurringPeriodRef}
+                  type="number"
+                  value={recurringPeriod}
+                  onChange={handleRecurringPeriodChange}
+                  className="border border-gray-300 rounded"
+                />
+              ) : (
+                <input
+                  ref={recurringPeriodRef}
+                  type="number"
+                  onChange={handleRecurringPeriodChange}
+                  className="border border-gray-300 rounded"
+                />
+              )}
             </div>
             <div className="mt-2">
               <span>예정일 :</span>
@@ -345,7 +390,7 @@ function List2({ todo, onBack, handleSelectTodo }) {
         />
       </div>
       <div className="flex justify-end mt-5">
-      <button
+        <button
           onClick={update}
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mr-2"
         >
