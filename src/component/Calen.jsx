@@ -5,8 +5,14 @@ import "react-calendar/dist/Calendar.css"; // 기본 스타일 유지
 function Calen({ handleDateClick, todos }) {
   const tileContent = ({ date, view }) => {
     if (view === "month") {
-      const dateString = date.toISOString().split("T")[0];
-      const hasTodo = todos.some((todo) => todo.date === dateString);
+      const dateString = new Date(date);
+
+      const hasTodo = todos.some((todo) => {
+        return (
+          new Date(todo.dueDate).toDateString() === dateString.toDateString()
+        );
+      });
+      console.log(hasTodo);
       if (hasTodo) {
         return (
           <div className="bg-yellow-200 rounded-full w-2 h-2 mx-auto mt-1"></div> // 파스텔 톤, 크기 조정 및 간격 추가
@@ -27,7 +33,7 @@ function Calen({ handleDateClick, todos }) {
         tileClassName={({ date, view }) => {
           if (view === "month") {
             const dateString = date.toISOString().split("T")[0];
-            const hasTodo = todos.some((todo) => todo.date === dateString);
+            const hasTodo = todos.some((todo) => todo.dueDate === dateString);
             return hasTodo ? "relative" : "";
           }
           return "";

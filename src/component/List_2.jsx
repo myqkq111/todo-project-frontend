@@ -47,7 +47,6 @@ function List2({ todo, onBack, handleSelectTodo }) {
   // 달력 선택 시 실행되는 함수
   const handleCalendarChange = (e) => {
     const selectedDate = new Date(e.target.value);
-    console.log(selectedDate);
     setCalenDate(selectedDate.toISOString());
 
     // newDate와 선택된 날짜 사이의 차이 계산
@@ -170,15 +169,27 @@ function List2({ todo, onBack, handleSelectTodo }) {
         return;
       }
 
+      if (dueDate < new Date().toISOString().split("T")[0]) {
+        alert("마감일을 확인해주세요");
+        return;
+      }
+
       updateDate.regDate = regDate;
       updateDate.recurringPeriod = recurringPeriod;
       updateDate.dueDate = dueDate;
     } else {
       if (dueDateChange !== null) {
-        updateDate.dueDate = dueDateChange;
+        if (
+          dueDateChange.split("T")[0] >= new Date().toISOString().split("T")[0]
+        ) {
+          updateDate.dueDate = dueDateChange;
+        } else {
+          alert("마감일을 확인해주세요.");
+          return;
+        }
       }
     }
-
+    console.log("여기까지 안옴");
     axios
       .put(`http://localhost:3000/api/todos/update`, updateDate)
       .then((res) => {
