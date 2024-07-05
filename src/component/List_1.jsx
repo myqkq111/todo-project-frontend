@@ -6,6 +6,7 @@ function List1({ date, onSelectTodo, todos, setTodos, dropdownValue }) {
   const [newTodo, setNewTodo] = useState("");
   const [showInput, setShowInput] = useState(false);
   const [filteredTodos, setFilteredTodos] = useState([]);
+  const [categori, setCategori] = useState(null);
 
   // 날짜 보정 함수
   const adjustDate = (date) => {
@@ -19,6 +20,11 @@ function List1({ date, onSelectTodo, todos, setTodos, dropdownValue }) {
   useEffect(() => {
     // 필요 시 todos를 사용하여 필터링 로직 추가
     filterTodos();
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("User not authenticated");
+    }
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   }, []); // todos 또는 dropdownValue가 변경될 때마다 재필터링
 
   const filterTodos = () => {
@@ -37,12 +43,14 @@ function List1({ date, onSelectTodo, todos, setTodos, dropdownValue }) {
 
   const addTodo = () => {
     if (newTodo.trim() !== "") {
+      if (categori === null) {
+        alert("카테고리를 선택해주세요.");
+        return;
+      }
       const newTodoItem = {
         title: newTodo,
-        contents: "",
-        categori: "일상",
+        categori: categori,
         dueDate: selectedDateString,
-        userId: "667b7be3e4220d59f2d58835",
       };
       axios
         .post("http://localhost:3000/api/todos/new", newTodoItem)
@@ -52,6 +60,7 @@ function List1({ date, onSelectTodo, todos, setTodos, dropdownValue }) {
           setShowInput(false);
         })
         .catch((error) => {
+          alert("이미 같은 제목의 할일이 존재합니다.");
           console.error("할일 생성 오류:", error);
         });
     }
@@ -77,7 +86,7 @@ function List1({ date, onSelectTodo, todos, setTodos, dropdownValue }) {
         </button>
       </div>
       {showInput && (
-        <div className="mb-5">
+        <div className="mt-2">
           <input
             type="text"
             value={newTodo}
@@ -86,6 +95,20 @@ function List1({ date, onSelectTodo, todos, setTodos, dropdownValue }) {
             placeholder="새 할일 입력"
             className="w-full p-2 border rounded-md text-black"
           />
+          <div className="mt-2">
+            <button
+              onClick={() => setCategori(1)}
+              className="mr-2 px-4 py-2 bg-blue-500 text-white rounded-md shadow-md"
+            >
+              일상
+            </button>
+            <button
+              onClick={() => setCategori(0)}
+              className="px-4 py-2 bg-green-500 text-white rounded-md shadow-md"
+            >
+              직장
+            </button>
+          </div>
         </div>
       )}
       <ul className="flex flex-col items-center">

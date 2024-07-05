@@ -27,6 +27,7 @@ function Login() {
 
       console.log("Received JWT Token:", token);
       localStorage.setItem("token", token);
+
       setIsLoggedIn(true);
       navigate("/");
     } catch (error) {

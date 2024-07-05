@@ -27,9 +27,15 @@ function App() {
   const catRef = useRef(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      setIsLoggedIn(true);
+    if (localStorage.getItem("token")) {
+      const token = localStorage.getItem("token");
+      if (token) {
+        setIsLoggedIn(true);
+      }
+      if (!token) {
+        throw new Error("User not authenticated");
+      }
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     }
   }, []);
 
@@ -286,6 +292,7 @@ function App() {
               todo={selectedTodo}
               onBack={handleBackToList1}
               handleSelectTodo={handleSelectTodo}
+              setSelectedTodo={setSelectedTodo}
             />
           </div>
         )}
