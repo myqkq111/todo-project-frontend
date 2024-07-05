@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { AiOutlineUser, AiOutlineLock } from "react-icons/ai";
 
 const UpdateProfileForm = ({ user, onUpdateSuccess }) => {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -46,29 +47,60 @@ const UpdateProfileForm = ({ user, onUpdateSuccess }) => {
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="password"
-          placeholder="현재 비밀번호"
-          value={currentPassword}
-          onChange={(e) => setCurrentPassword(e.target.value)}
-          className="block w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <input
-          type="password"
-          placeholder="새로운 비밀번호"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          className="block w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button
-          type="submit"
-          className="w-full py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
-        >
-          비밀번호 변경
-        </button>
-      </form>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="w-full max-w-md p-8 space-y-4 bg-white rounded shadow-md">
+        <h2 className="text-2xl font-bold text-center text-gray-800">
+          프로필 수정
+        </h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="relative flex items-center">
+            <AiOutlineUser className="absolute w-6 h-6 text-black left-3" />
+            <input
+              type="text"
+              placeholder="새로운 사용자 이름"
+              value={newUsername}
+              onChange={(e) => setNewUsername(e.target.value)}
+              className="w-full pl-10 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+          <div className="relative flex items-center">
+            <AiOutlineUser className="absolute w-6 h-6 text-black left-3" />
+            <input
+              type="email"
+              placeholder="새로운 이메일"
+              value={newEmail}
+              onChange={(e) => setNewEmail(e.target.value)}
+              className="w-full pl-10 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+          <div className="relative flex items-center">
+            <AiOutlineLock className="absolute w-6 h-6 text-black left-3" />
+            <input
+              type="password"
+              placeholder="현재 비밀번호"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              className="w-full pl-10 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+          <div className="relative flex items-center">
+            <AiOutlineLock className="absolute w-6 h-6 text-black left-3" />
+            <input
+              type="password"
+              placeholder="새로운 비밀번호"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="w-full pl-10 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
+          >
+            프로필 수정
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

@@ -25,6 +25,7 @@ function Login() {
 
       const { token } = response.data;
 
+      console.log("Received JWT Token:", token);
       localStorage.setItem("token", token);
 
       setIsLoggedIn(true);

@@ -12,6 +12,7 @@ function Calen({ handleDateClick, todos }) {
           new Date(todo.dueDate).toDateString() === dateString.toDateString()
         );
       });
+
       if (hasTodo) {
         return (
           <div className="bg-yellow-200 rounded-full w-2 h-2 mx-auto mt-1"></div> // 파스텔 톤, 크기 조정 및 간격 추가

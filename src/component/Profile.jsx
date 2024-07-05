@@ -70,18 +70,18 @@ const Profile = () => {
   };
 
   return (
-    <div>
-      <Header
-        isLoggedIn={isLoggedIn}
-        handleLogout={handleLogout}
-        handleDelete={handleDelete}
-        // 필요한 다른 props도 전달
-      />
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <div className="w-full max-w-md p-8 space-y-8 bg-white rounded shadow-md">
-          <h2 className="text-3xl font-bold text-center text-gray-800 mb-4">
-            사용자 프로필
-          </h2>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="w-full max-w-md p-8 space-y-8 bg-white rounded shadow-md">
+        <Header
+          isLoggedIn={isLoggedIn}
+          handleLogout={handleLogout}
+          handleDelete={handleDelete}
+          // 필요한 다른 props도 전달
+        />
+        <h2 className="text-3xl font-bold text-center text-gray-800 mb-4">
+          사용자 프로필
+        </h2>
+        <div className="w-10/12 mx-auto">
           {user && (
             <UpdateProfileForm
               user={user}
