@@ -24,7 +24,9 @@ function Login() {
       );
 
       const { token } = response.data;
+
       localStorage.setItem("token", token);
+
       setIsLoggedIn(true);
       navigate("/");
     } catch (error) {

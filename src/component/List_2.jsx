@@ -7,7 +7,7 @@ import {
 } from "react-icons/ai";
 import axios from "axios";
 
-function List2({ todo, onBack, handleSelectTodo }) {
+function List2({ todo, onBack, handleSelectTodo, setSelectedTodo }) {
   const [isEditing, setIsEditing] = useState(false);
   const [newTitle, setNewTitle] = useState(todo.title);
   const [newDate, setNewDate] = useState(todo.dueDate);
@@ -43,6 +43,13 @@ function List2({ todo, onBack, handleSelectTodo }) {
 
     setDateDifference(differenceInDays);
   }, [todo]);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("User not authenticated");
+    }
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  }, []);
 
   // 달력 선택 시 실행되는 함수
   const handleCalendarChange = (e) => {
@@ -118,9 +125,12 @@ function List2({ todo, onBack, handleSelectTodo }) {
       .put("http://localhost:3000/api/filter/completed", {
         userId: userId,
         completed: completed,
+        title: todo.title,
       })
       .then((res) => {
         setIsCompleted(!isCompleted);
+        res.data.completed = !res.data.completed;
+        setSelectedTodo(res.data);
       })
       .catch((error) => {
         console.error("Error occurred on fetching", error);
@@ -132,9 +142,12 @@ function List2({ todo, onBack, handleSelectTodo }) {
       .put("http://localhost:3000/api/filter/isImportant", {
         userId: userId,
         isImportant: isImportant,
+        title: todo.title,
       })
       .then((res) => {
         setIsFavorite(!isFavorite);
+        res.data.isImportant = !res.data.isImportant;
+        setSelectedTodo(res.data);
       })
       .catch((error) => {
         console.error("Error occurred on fetching", error);
@@ -189,7 +202,6 @@ function List2({ todo, onBack, handleSelectTodo }) {
         }
       }
     }
-    console.log("여기까지 안옴");
     axios
       .put(`http://localhost:3000/api/todos/update`, updateDate)
       .then((res) => {
