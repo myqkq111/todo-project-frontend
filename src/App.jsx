@@ -184,6 +184,7 @@ function App() {
     setSelectedDate(new Date());
     setCurrentView("calendar");
   };
+
   const handleLogout = async () => {
     try {
       const token = localStorage.getItem("token");
