@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { AiOutlinePlus, AiOutlineSync, AiFillStar } from "react-icons/ai";
 import axios from "axios";
+import { IoMdReturnLeft } from "react-icons/io";
 
 function List1({ date, onSelectTodo, todos, setTodos, dropdownValue }) {
   const [newTodo, setNewTodo] = useState("");
@@ -45,6 +46,10 @@ function List1({ date, onSelectTodo, todos, setTodos, dropdownValue }) {
     if (newTodo.trim() !== "") {
       if (categori === null) {
         alert("카테고리를 선택해주세요.");
+        return;
+      }
+      if(selectedDateString < new Date().toISOString().split("T")[0]){
+        alert("마감일을 확인해주세요.");
         return;
       }
       const newTodoItem = {

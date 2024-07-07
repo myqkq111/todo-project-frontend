@@ -180,15 +180,25 @@ function App() {
     setCurrentView("list2");
   };
 
-  const handleBackToList1 = () => {
+  const handleBackToList1 = (e) => {
     setSelectedTodo(null);
     setCurrentView("iconList");
+    handleIconClick(e);
   };
 
   const handleBackToCalendar = () => {
     setSelectedTodo(null);
     setSelectedDate(new Date());
     setCurrentView("calendar");
+
+    axios
+    .get("http://localhost:3000/api/todos/list")
+    .then((res) => {
+      setTodos(res.data); // 서버에서 받아온 할일 목록을 설정합니다.
+    })
+    .catch((error) => {
+      console.error("할일 목록 불러오기 오류:", error);
+    });
   };
 
   const handleLogout = async () => {
@@ -293,6 +303,7 @@ function App() {
               onBack={handleBackToList1}
               handleSelectTodo={handleSelectTodo}
               setSelectedTodo={setSelectedTodo}
+              list1Name={list1Name}
             />
           </div>
         )}
