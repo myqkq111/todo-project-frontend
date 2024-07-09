@@ -60,7 +60,7 @@ const UpdateProfileForm = ({ user, onUpdateSuccess }) => {
               placeholder="새로운 사용자 이름"
               value={newUsername}
               onChange={(e) => setNewUsername(e.target.value)}
-              className="w-full pl-10 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full pl-10 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
             />
           </div>
           <div className="relative flex items-center">
@@ -70,7 +70,7 @@ const UpdateProfileForm = ({ user, onUpdateSuccess }) => {
               placeholder="새로운 이메일"
               value={newEmail}
               onChange={(e) => setNewEmail(e.target.value)}
-              className="w-full pl-10 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full pl-10 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
             />
           </div>
           <div className="relative flex items-center">
@@ -80,7 +80,7 @@ const UpdateProfileForm = ({ user, onUpdateSuccess }) => {
               placeholder="현재 비밀번호"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
-              className="w-full pl-10 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full pl-10 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
             />
           </div>
           <div className="relative flex items-center">
@@ -90,7 +90,7 @@ const UpdateProfileForm = ({ user, onUpdateSuccess }) => {
               placeholder="새로운 비밀번호"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full pl-10 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full pl-10 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
             />
           </div>
           <button
