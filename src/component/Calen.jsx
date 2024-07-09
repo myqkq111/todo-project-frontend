@@ -2,7 +2,7 @@ import React from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css"; // 기본 스타일 유지
 
-function Calen({ handleDateClick, todos }) {
+function Calen({ handleDateClick, todos, date, handleDateChange }) {
   const tileContent = ({ date, view }) => {
     if (view === "month") {
       const dateString = new Date(date);
@@ -25,10 +25,12 @@ function Calen({ handleDateClick, todos }) {
   return (
     <div className="calendar-container relative mb-1 bg-white text-black shadow-md rounded-md ">
       <Calendar
+        value={date}
         className="w-full border-none"
         onClickDay={(event) => {
           handleDateClick(event);
         }}
+        onChange={handleDateChange}
         tileContent={tileContent}
         tileClassName={({ date, view }) => {
           if (view === "month") {

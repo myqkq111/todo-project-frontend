@@ -37,6 +37,7 @@ function Header({
             TodoList
           </h1>
           <select
+            disabled={!isLoggedIn}
             value={dropdownValue}
             onChange={handleDropdownChange}
             className="px-3 py-2 border border-gray-400 rounded-md text-sm bg-white text-black h-10"
@@ -49,36 +50,33 @@ function Header({
         <div className="flex items-center gap-4 mt-2">
           {isLoggedIn ? (
             <>
-              <button
-                onClick={handleLogout}
-                className="py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
-              >
+              <button onClick={handleLogout} className="text-sm tracking-wide">
                 로그아웃
               </button>
               <button
                 onClick={() => {
-                  console.log("Delete button clicked");
                   handleDelete();
                 }}
-                className="py-2 px-4 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:bg-red-600"
+                className="text-sm tracking-wide"
               >
                 회원 탈퇴
               </button>
-              <Link
-                to="/update"
-                className="py-2 px-4 bg-yellow-300 text-white rounded-md hover:bg-yellow-400 focus:outline-none focus:bg-yellow-600"
-              >
+              <Link to="/update" className="text-sm tracking-wide">
                 회원정보 수정
               </Link>
             </>
           ) : (
-            <Link to="/login" className="text-white">
+            <Link
+              to="/login"
+              className="text-sm tracking-wide border border-white rounded-md py-2 px-4"
+            >
               로그인
             </Link>
           )}
           <div className="controls flex gap-4 items-center mt-2">
             <div className="relative flex items-center">
               <select
+                disabled={!isLoggedIn}
                 ref={selectRef}
                 value={searchCategory}
                 onChange={handleSearchCategoryChange}
@@ -90,10 +88,11 @@ function Header({
                 <option value="직장 검색">직장 검색</option>
               </select>
               <input
+                disabled={!isLoggedIn}
                 ref={inputRef}
                 type="text"
                 placeholder="검색"
-                className="pl-32 pr-3 py-2 border border-gray-400 rounded-r-md text-sm bg-white text-black h-10 text-right text-xs"
+                className="pl-32 pr-3 py-2 border border-gray-400 rounded-r-md text-sm bg-white text-black h-10 text-right text-xs "
                 onKeyDown={(event) => handleKeyPress(event)}
               />
             </div>

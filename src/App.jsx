@@ -11,6 +11,7 @@ import Calen from "./component/Calen";
 import { useNavigate, Routes, Route } from "react-router-dom";
 import axios from "axios";
 import Profile from "./component/Profile";
+import LoginPopup from "./component/LoginPopup";
 
 function App() {
   const [value, setValue] = useState(new Date());
@@ -23,18 +24,14 @@ function App() {
   const [todos, setTodos] = useState([]);
   const [list1Value, setList1Value] = useState([]);
   const [list1Name, setList1Name] = useState([]);
+  const [date, setDate] = useState(new Date());
   const navigate = useNavigate();
   const catRef = useRef(null);
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
       const token = localStorage.getItem("token");
-      if (token) {
-        setIsLoggedIn(true);
-      }
-      if (!token) {
-        throw new Error("User not authenticated");
-      }
+      setIsLoggedIn(true);
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     }
   }, []);
@@ -192,13 +189,13 @@ function App() {
     setCurrentView("calendar");
 
     axios
-    .get("http://localhost:3000/api/todos/list")
-    .then((res) => {
-      setTodos(res.data); // 서버에서 받아온 할일 목록을 설정합니다.
-    })
-    .catch((error) => {
-      console.error("할일 목록 불러오기 오류:", error);
-    });
+      .get("http://localhost:3000/api/todos/list")
+      .then((res) => {
+        setTodos(res.data); // 서버에서 받아온 할일 목록을 설정합니다.
+      })
+      .catch((error) => {
+        console.error("할일 목록 불러오기 오류:", error);
+      });
   };
 
   const handleLogout = async () => {
@@ -263,72 +260,86 @@ function App() {
     }
   };
 
+  const handleDateChange = (newDate) => {
+    setDate(newDate);
+  };
+
   return (
-    <div className="App min-h-screen flex flex-col bg-dark text-dark transition-colors duration-300">
-      <Header
-        dropdownValue={dropdownValue}
-        searchCategory={searchCategory}
-        handleDropdownChange={handleDropdownChange}
-        handleSearchCategoryChange={handleSearchCategoryChange}
-        isLoggedIn={isLoggedIn}
-        setTodos={setTodos} // setTodos 함수를 Header 컴포넌트에 전달
-        handleLogout={handleLogout}
-        handleDelete={handleDelete}
-        handleTodolistClick={handleTodolistClick} // 핸들러 추가
-        handleIconClick={handleIconClick}
-      />
-      <div className="content flex flex-col gap-10 mt-20 mx-auto max-w-screen-lg p-4">
-        {currentView === "calendar" && (
-          <>
-            <Middle handleIconClick={handleIconClick} />
-            <Calen handleDateClick={handleDateClick} todos={todos} />
-          </>
-        )}
-        {currentView === "list1" && (
-          <div className="modal fixed top-1/2 left-1/2 w-10/12 max-w-lg transform -translate-x-1/2 -translate-y-1/2 bg-dark text-dark p-6 rounded-lg shadow-lg z-50">
-            <List1
-              date={selectedDate}
+    <div className="border border-white rounded-md p-4 ">
+      <div className="App min-h-screen flex flex-col bg-dark text-dark transition-colors duration-300">
+        <Header
+          dropdownValue={dropdownValue}
+          searchCategory={searchCategory}
+          handleDropdownChange={handleDropdownChange}
+          handleSearchCategoryChange={handleSearchCategoryChange}
+          isLoggedIn={isLoggedIn}
+          setTodos={setTodos} // setTodos 함수를 Header 컴포넌트에 전달
+          handleLogout={handleLogout}
+          handleDelete={handleDelete}
+          handleTodolistClick={handleTodolistClick} // 핸들러 추가
+          handleIconClick={handleIconClick}
+        />
+        <div className="content flex flex-col gap-10 mt-20 mx-auto max-w-screen-lg p-4 border border-white rounded-md">
+          {currentView === "calendar" && (
+            <>
+              <Middle handleIconClick={handleIconClick} />
+              <Calen
+                handleDateClick={handleDateClick}
+                todos={todos}
+                date={date}
+                handleDateChange={handleDateChange}
+              />
+              {localStorage.getItem("token") ? <></> : <LoginPopup />}
+            </>
+          )}
+          {currentView === "list1" && (
+            <div className="modal fixed top-1/2 left-1/2 w-10/12 max-w-lg transform -translate-x-1/2 -translate-y-1/2 bg-dark text-dark p-6 rounded-lg shadow-lg z-50">
+              <List1
+                date={selectedDate}
+                onSelectTodo={handleSelectTodo}
+                onBack={handleBackToCalendar}
+                todos={todos}
+                setTodos={setTodos}
+                dropdownValue={dropdownValue} // dropdownValue를 List1 컴포넌트에 전달
+              />
+            </div>
+          )}
+          {currentView === "list2" && selectedTodo && (
+            <div className="modal fixed top-1/2 left-1/2 w-10/12 max-w-lg transform -translate-x-1/2 -translate-y-1/2 bg-dark text-dark p-6 rounded-lg shadow-lg z-50">
+              <List2
+                todo={selectedTodo}
+                onBack={handleBackToList1}
+                handleSelectTodo={handleSelectTodo}
+                setSelectedTodo={setSelectedTodo}
+                list1Name={list1Name}
+              />
+            </div>
+          )}
+          {currentView === "iconList" && (
+            <IconList
+              todos={list1Value}
               onSelectTodo={handleSelectTodo}
-              onBack={handleBackToCalendar}
-              todos={todos}
-              setTodos={setTodos}
-              dropdownValue={dropdownValue} // dropdownValue를 List1 컴포넌트에 전달
-            />
-          </div>
-        )}
-        {currentView === "list2" && selectedTodo && (
-          <div className="modal fixed top-1/2 left-1/2 w-10/12 max-w-lg transform -translate-x-1/2 -translate-y-1/2 bg-dark text-dark p-6 rounded-lg shadow-lg z-50">
-            <List2
-              todo={selectedTodo}
-              onBack={handleBackToList1}
-              handleSelectTodo={handleSelectTodo}
-              setSelectedTodo={setSelectedTodo}
               list1Name={list1Name}
             />
-          </div>
-        )}
-        {currentView === "iconList" && (
-          <IconList
-            todos={list1Value}
-            onSelectTodo={handleSelectTodo}
-            list1Name={list1Name}
-          />
-        )}
-      </div>
-      {(currentView === "list1" ||
-        currentView === "list2" ||
-        currentView === "iconList") && (
-        <div
-          className="modal-overlay fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-40"
-          onClick={handleBackToCalendar}
-        ></div>
-      )}
-      <img ref={catRef} src="/cat.PNG" className="cat" alt="cat" />
+          )}
+        </div>
 
-      {/* 프로필 페이지 라우트 설정 */}
-      <Routes>
-        <Route path="/profile" element={<Profile />} />
-      </Routes>
+        {(currentView === "list1" ||
+          currentView === "list2" ||
+          currentView === "iconList") && (
+          <div
+            className="modal-overlay fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-40"
+            onClick={handleBackToCalendar}
+          ></div>
+        )}
+
+        <img ref={catRef} src="/cat.PNG" className="cat" alt="cat" />
+
+        {/* 프로필 페이지 라우트 설정 */}
+        <Routes>
+          <Route path="/profile" element={<Profile />} />
+        </Routes>
+      </div>
     </div>
   );
 }
