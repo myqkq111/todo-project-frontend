@@ -68,7 +68,7 @@ function Register() {
               value={username}
               onChange={handleUsernameChange}
               required
-              className="w-full pl-10 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full pl-10 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
             />
             <button
               type="button"
@@ -95,7 +95,7 @@ function Register() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
           />
           <div className="relative flex items-center">
             <AiOutlineLock className="absolute w-6 h-6 text-gray-400 left-3" />
@@ -105,7 +105,7 @@ function Register() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full pl-10 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full pl-10 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
             />
           </div>
           <div className="relative flex items-center">
@@ -116,7 +116,7 @@ function Register() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
-              className="w-full pl-10 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full pl-10 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
             />
           </div>
           <button

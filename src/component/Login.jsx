@@ -86,15 +86,6 @@ function Login() {
               아이디 찾기
             </Link>
           </p>
-          <p className="text-sm text-gray-600">
-            비밀번호를 잊으셨나요?{" "}
-            <Link
-              to="/reset-password"
-              className="text-blue-500 hover:underline"
-            >
-              비밀번호 재설정
-            </Link>
-          </p>
         </div>
       </div>
     </div>
