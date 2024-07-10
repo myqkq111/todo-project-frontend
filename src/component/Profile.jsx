@@ -17,11 +17,14 @@ const Profile = () => {
           throw new Error("User not authenticated");
         }
 
-        const response = await axios.get("http://localhost:3000/user-info", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await axios.get(
+          "http://ec2-3-36-117-96.ap-northeast-2.compute.amazonaws.com:3000/user-info",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         setUser(response.data);
       } catch (error) {
@@ -49,12 +52,15 @@ const Profile = () => {
         throw new Error("User not authenticated");
       }
 
-      const response = await axios.delete("http://localhost:3000/delete", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axios.delete(
+        "http://ec2-3-36-117-96.ap-northeast-2.compute.amazonaws.com:3000/delete",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       console.log("Response received:", response.data);
       alert(response.data.message); // 회원 탈퇴 성공 알림창

@@ -2,7 +2,8 @@
 
 import axios from "axios";
 
-const baseURL = "http://localhost:3000"; // 서버의 baseURL 설정
+const baseURL =
+  "http://ec2-3-36-117-96.ap-northeast-2.compute.amazonaws.com:3000"; // 서버의 baseURL 설정
 
 const registerUser = async (username, password) => {
   try {

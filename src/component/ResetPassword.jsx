@@ -23,7 +23,7 @@ function ResetPassword({ match }) {
 
     try {
       const response = await axios.put(
-        `http://localhost:3000/reset-password/${token}`,
+        `http://ec2-3-36-117-96.ap-northeast-2.compute.amazonaws.com:3000/reset-password/${token}`,
         { username, newPassword }
       );
       setMessage(response.data.message);

@@ -66,12 +66,13 @@ function Header({
               </Link>
             </>
           ) : (
-            <Link
-              to="/login"
-              className="text-sm tracking-wide border border-white rounded-md py-2 px-4"
-            >
-              로그인
-            </Link>
+            // <Link
+            //   to="/login"
+            //   className="text-sm tracking-wide border border-white rounded-md py-2 px-4"
+            // >
+            //   로그인
+            // </Link>
+            <></>
           )}
           <div className="controls flex gap-4 items-center mt-2">
             <div className="relative flex items-center">

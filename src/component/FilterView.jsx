@@ -14,10 +14,13 @@ function FilterView({
 }) {
   function completed(userId, completed) {
     axios
-      .put("http://localhost:3000/api/filter/completed", {
-        userId: userId,
-        completed: completed,
-      })
+      .put(
+        "http://ec2-3-36-117-96.ap-northeast-2.compute.amazonaws.com:3000/api/filter/completed",
+        {
+          userId: userId,
+          completed: completed,
+        }
+      )
       .then((res) => {
         handleIconClick(list1Name);
       })
@@ -28,10 +31,13 @@ function FilterView({
 
   function isImportant(userId, isImportant) {
     axios
-      .put("http://localhost:3000/api/filter/isImportant", {
-        userId: userId,
-        isImportant: isImportant,
-      })
+      .put(
+        "http://ec2-3-36-117-96.ap-northeast-2.compute.amazonaws.com:3000/api/filter/isImportant",
+        {
+          userId: userId,
+          isImportant: isImportant,
+        }
+      )
       .then((res) => {
         handleIconClick(list1Name);
       })

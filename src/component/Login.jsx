@@ -18,7 +18,7 @@ function Login() {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/users/login",
+        "http://ec2-3-36-117-96.ap-northeast-2.compute.amazonaws.com:3000/api/users/login",
         { username, password },
         { headers: { "Content-Type": "application/json" } }
       );

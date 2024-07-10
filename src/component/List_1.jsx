@@ -48,7 +48,7 @@ function List1({ date, onSelectTodo, todos, setTodos, dropdownValue }) {
         alert("카테고리를 선택해주세요.");
         return;
       }
-      if(selectedDateString < new Date().toISOString().split("T")[0]){
+      if (selectedDateString < new Date().toISOString().split("T")[0]) {
         alert("마감일을 확인해주세요.");
         return;
       }
@@ -58,7 +58,10 @@ function List1({ date, onSelectTodo, todos, setTodos, dropdownValue }) {
         dueDate: selectedDateString,
       };
       axios
-        .post("http://localhost:3000/api/todos/new", newTodoItem)
+        .post(
+          "http://ec2-3-36-117-96.ap-northeast-2.compute.amazonaws.com:3000/api/todos/new",
+          newTodoItem
+        )
         .then((res) => {
           setTodos([...todos, res.data]);
           setNewTodo("");
