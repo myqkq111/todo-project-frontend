@@ -45,7 +45,9 @@ function App() {
 
     // API 호출로 초기 데이터 가져오기
     axios
-      .get("http://localhost:3000/api/todos/list")
+      .get(
+        "http://ec2-3-36-117-96.ap-northeast-2.compute.amazonaws.com:3000/api/todos/list"
+      )
       .then((res) => {
         setTodos(res.data); // 서버에서 받아온 할일 목록을 설정합니다.
       })
@@ -79,7 +81,9 @@ function App() {
     switch (event) {
       case "미완료":
         axios
-          .get("http://localhost:3000/api/filter/failedSchedule")
+          .get(
+            "http://ec2-3-36-117-96.ap-northeast-2.compute.amazonaws.com:3000/api/filter/failedSchedule"
+          )
           .then((res) => {
             setList1Value(res.data);
           })
@@ -89,7 +93,9 @@ function App() {
         break;
       case "주기적인 일":
         axios
-          .get("http://localhost:3000/api/filter/recurringEvent")
+          .get(
+            "http://ec2-3-36-117-96.ap-northeast-2.compute.amazonaws.com:3000/api/filter/recurringEvent"
+          )
           .then((res) => {
             setList1Value(res.data);
           })
@@ -99,7 +105,9 @@ function App() {
         break;
       case "중요한 일":
         axios
-          .get("http://localhost:3000/api/filter/isImportant")
+          .get(
+            "http://ec2-3-36-117-96.ap-northeast-2.compute.amazonaws.com:3000/api/filter/isImportant"
+          )
           .then((res) => {
             setList1Value(res.data);
           })
@@ -109,7 +117,9 @@ function App() {
         break;
       case "완료":
         axios
-          .get("http://localhost:3000/api/filter/completed")
+          .get(
+            "http://ec2-3-36-117-96.ap-northeast-2.compute.amazonaws.com:3000/api/filter/completed"
+          )
           .then((res) => {
             setList1Value(res.data);
           })
@@ -119,7 +129,9 @@ function App() {
         break;
       case "전체 검색":
         axios
-          .get(`http://localhost:3000/api/filter?category=all&typing=${typing}`)
+          .get(
+            `http://ec2-3-36-117-96.ap-northeast-2.compute.amazonaws.com:3000/api/filter?category=all&typing=${typing}`
+          )
           .then((res) => {
             setList1Value(res.data);
           })
@@ -130,7 +142,7 @@ function App() {
       case "일상 검색":
         axios
           .get(
-            `http://localhost:3000/api/filter?category=dailyLife&typing=${typing}`
+            `http://ec2-3-36-117-96.ap-northeast-2.compute.amazonaws.com:3000/api/filter?category=dailyLife&typing=${typing}`
           )
           .then((res) => {
             setList1Value(res.data);
@@ -142,7 +154,7 @@ function App() {
       case "직장 검색":
         axios
           .get(
-            `http://localhost:3000/api/filter?category=workPlace&typing=${typing}`
+            `http://ec2-3-36-117-96.ap-northeast-2.compute.amazonaws.com:3000/api/filter?category=workPlace&typing=${typing}`
           )
           .then((res) => {
             setList1Value(res.data);
@@ -163,7 +175,9 @@ function App() {
     setSelectedDate(viewFormattedDate);
     setCurrentView("list1");
     axios
-      .get(`http://localhost:3000/api/todos?dueDate=${formattedDate}`)
+      .get(
+        `http://ec2-3-36-117-96.ap-northeast-2.compute.amazonaws.com:3000/api/todos?dueDate=${formattedDate}`
+      )
       .then((res) => {
         setTodos(res.data);
       })
@@ -189,7 +203,9 @@ function App() {
     setCurrentView("calendar");
 
     axios
-      .get("http://localhost:3000/api/todos/list")
+      .get(
+        "http://ec2-3-36-117-96.ap-northeast-2.compute.amazonaws.com:3000/api/todos/list"
+      )
       .then((res) => {
         setTodos(res.data); // 서버에서 받아온 할일 목록을 설정합니다.
       })
@@ -206,11 +222,15 @@ function App() {
       }
 
       // 서버로 로그아웃 요청을 보냄
-      await axios.post("http://localhost:3000/api/users/logout", null, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await axios.post(
+        "http://ec2-3-36-117-96.ap-northeast-2.compute.amazonaws.com:3000/api/users/logout",
+        null,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       // 로컬 스토리지에서 토큰 제거
       localStorage.removeItem("token");
@@ -234,7 +254,7 @@ function App() {
       }
 
       const response = await axios.delete(
-        "http://localhost:3000/api/users/delete",
+        "http://ec2-3-36-117-96.ap-northeast-2.compute.amazonaws.com:3000/api/users/delete",
         {
           headers: {
             Authorization: `Bearer ${token}`,

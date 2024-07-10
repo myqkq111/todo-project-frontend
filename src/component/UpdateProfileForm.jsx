@@ -21,7 +21,7 @@ const UpdateProfileForm = ({ user, onUpdateSuccess }) => {
       }
 
       const response = await axios.put(
-        "http://localhost:3000/api/users/update",
+        "http://ec2-3-36-117-96.ap-northeast-2.compute.amazonaws.com:3000/api/users/update",
         { newUsername, newEmail, currentPassword, newPassword },
         {
           headers: {

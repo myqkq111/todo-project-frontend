@@ -19,7 +19,7 @@ function Register() {
   const checkUsernameAvailability = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/users/check-username/${username}`
+        `http://ec2-3-36-117-96.ap-northeast-2.compute.amazonaws.com:3000/api/users/check-username/${username}`
       );
       setIsUsernameAvailable(!response.data.exists); // 서버에서 exists를 받도록 수정
     } catch (error) {
@@ -36,7 +36,7 @@ function Register() {
     }
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/users/register",
+        "http://ec2-3-36-117-96.ap-northeast-2.compute.amazonaws.com:3000/api/users/register",
         {
           username,
           password,
